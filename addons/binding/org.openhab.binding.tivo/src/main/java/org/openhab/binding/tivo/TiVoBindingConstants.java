@@ -20,7 +20,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 public class TiVoBindingConstants {
     public static final String BINDING_ID = "tivo";
-
     public static final int CONFIG_SOCKET_TIMEOUT = 1000;
 
     // List of all Thing Type UIDs

@@ -66,7 +66,6 @@ public class TiVoHandler extends BaseThingHandler {
         logger.debug("handleCommand {}, command: {}", channelUID, command);
 
         if (command != null && myTivoService != null) {
-
             TivoStatusData myTivo = myTivoService.getServiceStatus();
             String tivoCommand = null;
 
@@ -85,9 +84,7 @@ public class TiVoHandler extends BaseThingHandler {
 
             String tmpAct = command.toString().toUpperCase();
             if (command instanceof RefreshType) {
-
                 switch (channelUID.getId()) {
-
                     case CHANNEL_TIVO_STATUS:
                     case CHANNEL_TIVO_CHANNEL_FORCE:
                     case CHANNEL_TIVO_CHANNEL_SET:
@@ -100,13 +97,10 @@ public class TiVoHandler extends BaseThingHandler {
                         logger.info("TiVo '{}' skipping REFRESH command for channel: '{}'.", getThing().getUID(),
                                 channelUID.getId());
                 }
-
                 return;
             }
 
-            switch (channelUID.getId())
-
-            {
+            switch (channelUID.getId()) {
                 case CHANNEL_TIVO_CHANNEL_FORCE:
                     tivoCommand = "FORCECH";
                 case CHANNEL_TIVO_CHANNEL_SET:
@@ -140,7 +134,6 @@ public class TiVoHandler extends BaseThingHandler {
 
                 case CHANNEL_TIVO_TELEPORT:
                     tivoCommand = "TELEPORT " + tmpAct;
-
                     logger.debug("handleCommand '{}' TELEPORT command to tivo: '{}'", getThing().getUID(), tivoCommand);
 
                     if (myTivoService.getServiceStatus().getConnectionStatus() == ConnectionStatus.STANDBY
@@ -149,10 +142,8 @@ public class TiVoHandler extends BaseThingHandler {
                         logger.debug("TiVo '{}' TELEPORT re-mapped to IRCODE as we are in standby: '{}'",
                                 getThing().getUID(), tivoCommand);
                     }
-
                     // Attempt to execute the command on the TiVo
                     myTivo = myTivoService.cmdTivoSend(tivoCommand);
-
                     // Check to see if the command was successful
                     if (myTivo != null && myTivo.isCmdOk()) {
                         logger.debug("handleCommand '{}' - returned Tivo Data Object: '{}'", myTivo.toString());
@@ -171,7 +162,6 @@ public class TiVoHandler extends BaseThingHandler {
                     }
 
                     String tmpCommand = tivoCommand + " " + tmpAct;
-
                     logger.debug("handleCommand '{}' - IR/KBD command to tivo: '{}'", getThing().getUID(), tmpCommand);
 
                     // Attempt to execute the command on the TiVo
@@ -220,7 +210,6 @@ public class TiVoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing a TiVo '{}' with config options", getThing().getUID());
-
         Configuration conf = this.getConfig();
         TivoConfigData tivoConfig = new TivoConfigData();
 
@@ -339,7 +328,6 @@ public class TiVoHandler extends BaseThingHandler {
      */
     private void startPollStatus() {
         int firstStartDelay = tivoConfigData.getCfgPollInterval();
-
         refreshJob = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -354,7 +342,6 @@ public class TiVoHandler extends BaseThingHandler {
                 }
             }
         }, firstStartDelay, tivoConfigData.getCfgPollInterval(), TimeUnit.SECONDS);
-
         logger.info("refreshJob '{}' will start in '{}' seconds", getThing().getUID(), firstStartDelay);
     }
 

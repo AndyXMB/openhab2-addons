@@ -22,6 +22,9 @@ import java.util.Date;
  *            already has been)
  * @param chScan boolean true = channel scan is in progrefailed, STANDBY(3) = TiVo is in standby (write test only
  *            passed), ONLINE(4) = Online, both connection tests passed
+ *
+ * @author Jayson Kubilis (DigitalBytes) - Initial contribution
+ * @author Andrew Black (AndyXMB) - minor updates, removal of unused DiscoveryService functionality.
  */
 
 public class TivoStatusData {
@@ -42,10 +45,6 @@ public class TivoStatusData {
         this.pubToUI = pubToUI;
         this.connectionStatus = connectionStatus;
     }
-
-    // public TivoStatusData(boolean cmdOk, int channelNum, String msg, boolean pubToUI) {
-    // this(cmdOk, channelNum, msg, pubToUI, getConnectionStatus());
-    // }
 
     public enum ConnectionStatus {
         UNKNOWN,

@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Class TiVoDiscoveryParticipant.
- * *
- * 
+ *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - minor updates.
  */

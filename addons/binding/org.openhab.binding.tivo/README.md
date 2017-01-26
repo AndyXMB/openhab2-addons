@@ -1,4 +1,4 @@
-![Tesla](doc/TiVo_lockup_BLK.png)
+![TiVo Logo](doc/TiVo_lockup_BLK.png)
 
 ## TiVo Binding
 This binding integrates [TiVo](https://www.tivo.com/) Digital Video Recorders (DVR) that support the Tivo [TiVo TCP Control Protocol v1.1](https://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf).

@@ -13,7 +13,11 @@ import java.util.SortedSet;
 /**
  * The Class {@link TivoConfigData} stores the dynamic configuration parameters used within the {@link TivoHandler } and
  * {@link TivoConfigStatusProvider}.
+ *
+ * @author Jayson Kubilis (DigitalBytes) - Initial contribution
+ * @author Andrew Black (AndyXMB) - minor updates, removal of unused DiscoveryService functionality.
  */
+
 public class TivoConfigData {
 
     private String cfgHost = null;
