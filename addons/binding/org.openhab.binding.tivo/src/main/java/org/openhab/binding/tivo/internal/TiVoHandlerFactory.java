@@ -14,6 +14,10 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.Configuration;
+<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
+=======
+//import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
+>>>>>>> 73f9dc6 Initial Commit
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -28,12 +32,21 @@ import org.slf4j.LoggerFactory;
  * The {@link TiVoHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
+<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - minor updates, removal of unused DiscoveryService functionality.
+=======
+ * @author Jayson Kubilis - Initial contribution
+ * @author Andrew Black - minor updates, removal of unused DiscoveryService functionality.
+>>>>>>> 73f9dc6 Initial Commit
  */
 
 public class TiVoHandlerFactory extends BaseThingHandlerFactory {
+<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     private final Logger logger = LoggerFactory.getLogger(TiVoHandlerFactory.class);
+=======
+    private Logger logger = LoggerFactory.getLogger(TiVoHandlerFactory.class);
+>>>>>>> 73f9dc6 Initial Commit
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TIVO);
 

@@ -6,7 +6,11 @@
 
     <name>TiVo DVR Controller</name>
     <description>This is used to monitor current channel and remotely control a TiVo DVR</description>
+<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     <author>Andrew Black / Jayson Kubilis</author>
 
+=======
+    <author>Jayson Kubilis / Andrew Black</author>
+>>>>>>> 73f9dc6 Initial Commit
 
 </binding:binding>
