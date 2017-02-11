@@ -34,7 +34,7 @@ All devices support the following channels (non exhaustive):
 | tivoIRCommand | String | Remote Control Button (IRCOMMAND) | Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes. |
 | tivoKBDCommand | String | Keyboard Command (KEYBOARD) | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes. |
 | tivoStatus | String | TiVo Status | Action return code / channel information returned by the TiVo.  |
-| tivoStatus | String | Custom Command | Send any custom commands that are not documented within the official specification. Both the command and action string must be supplied. **Use at your own risk, support is not provided for undocumented commands!**   |
+| tivoStatus | String | Custom Command | Send any custom commands that are not documented within the official specification. Both the command and action string must be supplied. **Note: support is not provided for undocumented commands!**   |
 
 * Commands to each of the channels (except 'Custom Command') do not need to include the command keyword only the action/parameter.  So to change channel simply post/send the number of the channel **without** SETCH or  FORCECH.
 * Custom Command is provided to allow the testing of any commands not documented within the official documentation.  In this instance the COMMAND and any parameters must be sent as a single string.
@@ -44,12 +44,17 @@ All devices support the following channels (non exhaustive):
 ## Configuration Parameters Notes
 The following notes may help to understand the correct configuration properties for your set-up:
 
- 1. If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your Tivo, enable the **Keep Connection Open** option.  This will connect and lock the port in-use preventing any other device from connecting it.  If you use some other application, disable this option.
- 2. Poll for Channel Changes only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.
- 2. Set the correct Minimum and Maximum channel numbers BEFORE you run a full channel scan.  By default these are set at 101 and 999.   Consult your Tivo program guide to find these.
- 3. The Tivo will lean channel numbers that are not available as part of your subscription as you navigate / change channel.  However channel changing  operations will be slower if there is a large gap between valid channels.  Any gap must not exceed 100.  If you have a gap larger than this you must add the range of excluded channels manually or enable the **Perform Channel Scan** option.
+###Connection Performance###
+ 1. If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your Tivo, enable the **Keep Connection Open** option.  This will connect and lock the port in-use preventing any other device from connecting it.  If you use some other application, disable this option.  Performance is improved if the connection is kept open.
+ 2. **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.  Turning polling off, minimises the periodic overhead on your hardware.
+ 
+ ###Channel Changing###
+ 2. Set the correct Minimum and Maximum channel numbers BEFORE you run a full channel scan.  By default these are set at 100 and 999.   Consult your Tivo program guide to find these.
+ 3. The TiVo will learn channel numbers that are not available as part of your subscription as you navigate / change channel.  Channel changing  operations will be slower if there is a large gap between valid channels.  Any gap must not exceed 10.  If you have a gap larger than this, you must add the range of **Channels to Ignore** manually or use the **Perform Channel Scan** option to pre-populate the ignored channels (recommended).
  4. The **Channels to Ignore** section allows you to exclude any channels that you do not want to see or are not part of your subscription.  Both individual channel numbers and ranges of channels are supported e.g. 109, 106, 801-850, 999.
- 5.  Perform Channel Scan as the name suggest will systematically change the channels between the specified Minimum and Maximum, identifying which of these are valid.  At least one tuner must be available (not recording) while this operation completes.  If this process is interrupted e.g. by a configuration change or restart, the system will restart the scan at the beginning.  Any channels that are marked as being ignored will not be tested again.
+ 5.  **Perform Channel Scan** will systematically change the channels between the specified Minimum and Maximum, identifying which of these are valid.  At least one tuner must be available (not recording) while this operation completes.  If this process is interrupted e.g. by a configuration change or restart, the system will restart the scan at the beginning.  Any channels that are marked as being ignored will not be tested again.  
+ 6. You can run a channel scan while the system is in Standby mode.
+ 6. The channel scanning process will take approximately 1 second per channel.  With the default channel range a scan will therefore take between 15 and 20 minutes!  The screen will change to the specified channel while the scan is being run.
  6. If your provider adds new channels to your subscription line-up, these will have to be manually removed from the list of **Channels to Ignore**.  You can always remove all the entries and do a full scan again.
 
 ## Full Example
@@ -58,13 +63,15 @@ The following notes may help to understand the correct configuration properties 
 
 ```
 /* TIVO */
-String      TiVo_Command_Result                             {channel="tivo:sckt:Living_Room:tivoStatus"}
-String      TiVo_Fav_Channel        "Favs"                              {channel="tivo:sckt:Living_Room:tivoCommand", autoupdate="false"}
-String      TiVo_ChangeScreen       "Screens"                           {channel="tivo:sckt:Living_Room:tivoTeleport", autoupdate="false"}
-Number      TiVo_SetPoint           "Up/Down"                           {channel="tivo:sckt:Living_Room:tivoChannelSet"}
-Number      TiVo_SetPointName       "Channel Name [MAP(tivo.map):%s]"   {channel="tivo:sckt:Living_Room:tivoChannelSet"}
-String      TiVo_IRCmd              "Ir Cmd"                            {channel="tivo:sckt:Living_Room:tivoIRCommand", autoupdate="false"}
-String      TiVo_KbdCmd             "Keyboard Cmd"                      {channel="tivo:sckt:Living_Room:tivoKBDCommand", autoupdate="false"}
+String      TiVo_Status                                                                                                         {channel="tivo:sckt:Living_Room:tivoStatus"}
+String      TiVo_MenuScreen         "Menu Screens"                                                                              {channel="tivo:sckt:Living_Room:tivoTeleport", autoupdate="false"}
+Number      TiVo_SetPoint           "Up/Down"                                                                                   {channel="tivo:sckt:Living_Room:tivoChannelSet"}
+String      TiVo_SetPointName       "Channel Name [MAP(tivo.map):%s]"                                                           {channel="tivo:sckt:Living_Room:tivoChannelSet"}
+String      TiVo_IRCmd              "Ir Cmd"                                                                                    {channel="tivo:sckt:Living_Room:tivoIRCommand", autoupdate="false"}
+String      TiVo_KbdCmd             "Keyboard Cmd"                                                                              {channel="tivo:sckt:Living_Room:tivoKBDCommand", autoupdate="false"}
+
+String      TiVo_KeyboardStr        "Search String"
+Switch      TiVo_Search
 ```
 * The item 'TiVo_SetPointName' depends upon a valid tivo.map file to translate channel numbers to channel names.
 
@@ -72,17 +79,20 @@ String      TiVo_KbdCmd             "Keyboard Cmd"                      {channel
 
 ```
 sitemap TivoDemo label="Main Menu"
-{
-    Frame label="Tivo" {
-        Setpoint    item=TiVo_SetPoint          label="[CH]"            icon="television"   minValue=100 maxValue=999 step=1
-        Text        item=TiVo_Command_Result    label="TiVo Status"     icon="television"
-        Text        item=TiVo_SetPointName      label="Channel Name"    icon="television"
-        Switch      item=TiVo_Fav_Channel       label="Fav TV"          icon="television"   mappings=["SETCH 101"="BBC1", "SETCH 104"="CH 4","SETCH 110"="SKY 1",  "SETCH 135"="SyFy", "SETCH 429"="Film 4"]
-        Switch      item=TiVo_Fav_Channel       label="Fav Radio"       icon="television"   mappings=["SETCH 902"="BBC R2", "SETCH 904"="BBC R4 FM", "SETCH 905"="BBC R5","SETCH 951"="Abs 80s"]
-        Switch      item=TiVo_ChangeScreen                              icon="television"   mappings=["TIVO"="Home", "LIVETV"="Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows" ]
-        Switch      item=TiVo_IRCmd             label="Navigation"      icon="television"   mappings=["SELECT"="Select", "EXIT"="Exit" ]
-        Switch      item=TiVo_IRCmd             label="Navigation"      icon="television"   mappings=["CHANNELUP"="CH +", "CANNELDOWN"="CH -" ]
-    }
+            Frame label="Tivo" {
+                Setpoint    item=TiVo_SetPoint          label="[CH %n]"         icon="television"   minValue=1 maxValue=999 step=1
+                Text        item=TiVo_SetPointName      label="Channel"         icon="television"
+                Text        item=TiVo_Status            label="Status"          icon="television"
+                Switch      item=TiVo_IRCmd             label="Media"           icon="television"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="⏵", "STOP"="⏹", "FORWARD"="⏩" ]
+                Switch      item=TiVo_SetPoint          label="Fav TV"          icon="television"   mappings=[101="BBC1", 104="CH 4", 110="SKY 1", 135="SyFy", 429="Film 4"]            
+                Switch      item=TiVo_SetPoint          label="Fav Radio"       icon="television"   mappings=[902="BBC R2", 904="BBC R4 FM", 905="BBC R5", 951="Abs 80s"]
+                Switch      item=TiVo_MenuScreen        label="Menus"           icon="television"   mappings=["TIVO"="Home", "LIVETV"="Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "INFO"="Info" ]
+                Switch      item=TiVo_IRCmd             label="Navigation"      icon="television"   mappings=["UP"="⏶", "DOWN"="⏷", "LEFT"="⏴", "RIGHT"="⏵", "SELECT"="Select", "EXIT"="Exit" ]
+                Switch      item=TiVo_IRCmd             label="Likes"           icon="television"   mappings=["THUMBSUP"="Thumbs Up", "THUMBSDOWN"="Thumbs Down"]
+                Switch      item=TiVo_IRCmd             label="Actions"         icon="television"   mappings=["ACTION_A"="Red","ACTION_B"="Green","ACTION_C"="Yellow","ACTION_D"="Blue"]
+                Switch      item=TiVo_IRCmd             label="Standby"         icon="television"   mappings=["STANDBY"="Standby","TIVO"="Wake Up"]
+                
+            }
 }
 ```
 
