@@ -21,35 +21,35 @@ control of channel changes, user interface navigation and allow the client to se
         	<parameter name="deviceName" type="text" required="true">
 				<default>My Tivo</default>
 				<label>Device Name</label>
-				<description>A friendly name to refer to this device.<![CDATA[ <b> ]]>Default: Device name specified on the Tivo<![CDATA[ </b> ]]></description>
+				<description>A friendly name to refer to this device.<![CDATA[ <b> ]]>Default: Device name specified on the TiVo.<![CDATA[ </b> ]]></description>
 			</parameter>
         	<parameter name="address" type="text" required="true">
             	<default></default>
             	<label>Address</label>
-            	<description>The hostname or IP address of your TiVo box</description>
+            	<description>The IP address or hostname of your TiVo box</description>
         	</parameter>
         	<parameter name="tcpPort" type="integer" max="65535" min="1">
 				<default>31339</default>
 				<label>TCP Port</label>
 				<context>network-address</context>
-				<description>The TCP port number used to connect to the TiVo. There is normally no need to change this.<![CDATA[ <b> ]]>Default: 31339<![CDATA[ </b> ]]></description>
+				<description>The TCP port number used to connect to the TiVo.<![CDATA[ <b> ]]>Default: 31339<![CDATA[ </b> ]]></description>
 			</parameter>
 			<parameter name="numRetry" type="integer" max="65535" min="0">
 				<default>5</default>
 				<label>Connection Retries</label>
-				<description>The number of times to attempt to reconnect to the TiVo box in case of a connection failure.<![CDATA[ <b> ]]>Default: 5<![CDATA[ </b> ]]></description>
+				<description>The number of times to attempt reconnection to the TiVo box, if there is a connection failure.<![CDATA[ <b> ]]>Default: 5<![CDATA[ </b> ]]></description>
 			</parameter>
 			<parameter name="keepConActive" type="boolean">
 				<default>true</default>
 				<required>true</required>
 				<label>Keep Connection Open</label>
-				<description>Keep connection to the TiVo open.  Recommended for monitoring the TiVo for changes in TV channels.  Disable if other applications that need to access the Remote Control Protocol port will be used e.g. mobile remote control applications.<![CDATA[ <b> ]]>Default: True (Enabled)<![CDATA[ </b> ]]></description>
+				<description>Keep connection to the TiVo open.  Recommended for monitoring the TiVo for changes in TV channels.  Disable if other applications that use the Remote Control Protocol port will also be used e.g. mobile remote control applications.<![CDATA[ <b> ]]>Default: True (Enabled)<![CDATA[ </b> ]]></description>
 			</parameter>
 			<parameter name="pollForChanges" type="boolean">
 				<default>true</default>
 				<required>true</required>
 				<label>Poll for Channel Changes</label>
-				<description>Check TiVo for channel changes.  Enable if openHAB and a physical remote control (or other services use the Remote Control Protocol) will be used.<![CDATA[ <b> ]]>Default: True (Enabled)<![CDATA[ </b> ]]></description>
+				<description>Check TiVo for channel changes.  Enable if openHAB and a physical remote control (or other services use the Remote Control Protocol) will be used. <![CDATA[ <b> ]]>Default: True (Enabled)<![CDATA[ </b> ]]></description>
 			</parameter>
 			<parameter name="pollInterval" type="integer" max="65535" min="3">
 				<default>10</default>
@@ -67,7 +67,7 @@ control of channel changes, user interface navigation and allow the client to se
                 <default></default>
                 <required>false</required>
                 <label>Channels to Ignore</label>
-                <description>Used in channel up / down operations to avoid invalid or channels that are not part of your subscription.  Skips the channels you list here in a comma separated list e.g. 109, 111, 999.<![CDATA[ <br /><br /> ]]>You can exclude a range of channel numbers by using a hyphen between the lower and upper numbers e.g. 109, 101, 800-850, 999.<![CDATA[ <br /><br /> ]]>New entries do not have to be added in numeric order (add to the start), these are sorted when saved.<![CDATA[ <br /><br /> ]]>During normal channel changing operations, the maximum gap between valid channels is 100.  Any gap larger than 100 will not be learnt as you change channels under normal operation.  If your service has a gap larger than 100 channels you should exclude these manually or <![CDATA[ <b> ]]> Perform Channel Scan<![CDATA[ </b> ]]>. <![CDATA[ <br /><br /><b> ]]>Default: NULL (blank)<![CDATA[ </b> ]]></description>
+                <description>Used in channel up / down operations to avoid invalid or channels that are not part of your subscription.  Skips the channels you list here in a comma separated list e.g. 109, 111, 999.<![CDATA[ <br /><br /> ]]>You can exclude a range of channel numbers by using a hyphen between the lower and upper numbers e.g. 109, 101, 800-850, 999.<![CDATA[ <br /><br /> ]]>New entries do not have to be added in numeric order, these are sorted when saved.<![CDATA[ <br /><br /> ]]>During normal channel changing operations, the maximum gap between valid channels is 10.  Any gap larger than 10 will not be learnt as you change channels under normal operation.  If your service has a gap larger than 10 channels you should exclude these manually or <![CDATA[ <b> ]]> Perform Channel Scan<![CDATA[ </b> ]]>. <![CDATA[ <br /><br /><b> ]]>Default: NULL (blank)<![CDATA[ </b> ]]></description>
             </parameter>
             <parameter name="minChannel" type="integer" max="9999" min="1">
                 <default>100</default>
@@ -117,7 +117,7 @@ control of channel changes, user interface navigation and allow the client to se
     </channel-type>
     <channel-type id="tivoIRCommand">
         <item-type>String</item-type>
-        <label>Remote Control Button (IRCOMMAND)</label>
+        <label>Remote Control Button (IRCODE)</label>
         <description>Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes.   Type: String</description>
         <state readOnly="false"/>
     </channel-type>
@@ -136,7 +136,7 @@ control of channel changes, user interface navigation and allow the client to se
         <channel-type id="tivoCommand">
         <item-type>String</item-type>
         <label>Custom Command</label>
-        <description>Send custom commands that are not documented within the official specification.  Both the command and action string must be supplied.  <![CDATA[ <b> ]]> Use at your own risk, support is not provided for undocumented commands!  Type: String</description>
+        <description>Send custom commands.  Both the command and action strings must be supplied.  Note: support is only provided for documented commands / responses. <![CDATA[ </b> ]]> Type: String</description>
         <state readOnly="false"/>
     </channel-type>
 </thing:thing-descriptions>

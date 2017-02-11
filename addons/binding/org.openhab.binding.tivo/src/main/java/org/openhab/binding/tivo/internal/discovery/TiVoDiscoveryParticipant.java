@@ -25,33 +25,23 @@ import org.openhab.binding.tivo.TiVoBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class TiVoDiscoveryParticipant.
  */
 public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private Logger logger = LoggerFactory.getLogger(TiVoDiscoveryParticipant.class);
 
-    /**
-     * @see org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant#getSupportedThingTypeUIDs()
-     */
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(TiVoBindingConstants.THING_TYPE_TIVO);
     }
 
-    /**
-     * @see org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant#getServiceType()
-     */
     @Override
     public String getServiceType() {
         logger.debug("TiVo Discover getServiceType");
         return "_tivo-remote._tcp.local.";
     }
 
-    /**
-     * @see org.eclipse.smarthome.io.transport.mdns.discovery.MDNSDiscoveryParticipant#createResult(javax.jmdns.ServiceInfo)
-     */
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
         logger.debug("TiVo Discover createResult");
