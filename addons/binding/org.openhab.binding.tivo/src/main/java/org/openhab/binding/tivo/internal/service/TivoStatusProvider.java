@@ -368,9 +368,13 @@ public class TivoStatusProvider {
                 chNum = new Integer(Integer.parseInt(matcher.group(1).trim()));
             }
             logger.debug(" statusParse '{}' - parsed channel '{}'", tivoConfigData.getCfgIdentifier(), chNum);
-            return new TivoStatusData(true, chNum, strTivoStatus, pubMsg, tivoStatusData.getConnOK());
+            if (tivoStatusData.getConnOK() != 3) {
+                logger.debug(" connTivoConnectRetry '{}' - read test suceeded, we are ONLINE.",
+                        tivoConfigData.getCfgIdentifier());
+                tivoHandler.setTivoStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+            }
+            return new TivoStatusData(true, chNum, strTivoStatus, pubMsg, 3);
         }
-
         logger.warn(" TiVo '{}' - Unhandled / unexpected status message recieved: '{}'",
                 tivoConfigData.getCfgIdentifier(), strTivoStatus);
         return new TivoStatusData(false, -1, strTivoStatus, false, tivoStatusData.getConnOK());
@@ -452,7 +456,7 @@ public class TivoStatusProvider {
                                 tivoHandler.setTivoStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
                                 tivoStatusData.setConnOK(3);
                             }
-                            logger.debug(" connTivoConnectRetry '{}' - both test commands suceeded, we are ONLINE.",
+                            logger.debug(" connTivoConnectRetry '{}' - read test suceeded, we are ONLINE.",
                                     tivoConfigData.getCfgIdentifier());
                             return true;
                         } else if (connState == 2) {
