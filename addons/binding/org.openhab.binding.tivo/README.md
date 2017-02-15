@@ -2,8 +2,6 @@
 
 This binding integrates [TiVo](https://www.tivo.com/) Digital Video Recorders (DVR) that support the Tivo [TiVo TCP Control Protocol v1.1](https://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf).
 
-[TOC]
-
 ## Supported Things
 Most TiVo DVRs that support network remote control can be managed supported by this binding.  Check the web site of your service provider for the precise specification of the TiVo box they have provided.
 
@@ -57,7 +55,7 @@ All devices support the following channels (non exhaustive):
 
 ## Parameters
 | Parameter  | Display Name | Description  |
-|------------|--------------|--- ----------|
+|------------|--------------|-------------|
 | deviceName | Device Name | A friendly name to refer to this device. Default: Device name specified on the TiVo or 'My Tivo' if no connection can be made at initial device configuration. |
 | address | Address | The IP address or hostname of your TiVo box |
 | tcpPort | TCP Port | The TCP port number used to connect to the TiVo. Default: 31339 |
