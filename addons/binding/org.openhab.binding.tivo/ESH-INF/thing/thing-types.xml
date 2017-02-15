@@ -55,7 +55,7 @@ control of channel changes, user interface navigation and allow the client to se
 				<default>10</default>
 				<required>true</required>
 				<label>Polling Interval (Seconds)</label>
-				<description>Number of seconds to poll the status information from the TiVo. <![CDATA[ <b> ]]>Default: 10<![CDATA[ </b> ]]></description>
+				<description>Number of seconds between polling jobs to update status information from the TiVo. <![CDATA[ <b> ]]>Default: 10<![CDATA[ </b> ]]></description>
 			</parameter>
 			<parameter name="cmdWaitInterval" type="integer" max="65535" min="0">
                 <default>200</default>

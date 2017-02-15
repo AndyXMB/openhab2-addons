@@ -2,6 +2,8 @@
 
 This binding integrates [TiVo](https://www.tivo.com/) Digital Video Recorders (DVR) that support the Tivo [TiVo TCP Control Protocol v1.1](https://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf).
 
+[TOC]
+
 ## Supported Things
 Most TiVo DVRs that support network remote control can be managed supported by this binding.  Check the web site of your service provider for the precise specification of the TiVo box they have provided.
 
@@ -20,7 +22,18 @@ You can also add these manually, you will need to specify the LAN IP address of 
 
 ## Thing Configuration
 
-Thing file based creation has not been tested with this version.
+Auto-discovery is recommended for discovery and creation of TiVo devices, however they can also be created using the .things file format.  The following minimum parameters should be used:
+
+```
+Thing tivo:sckt:test_device [ deviceName = "Test Device", address="192.168.0.19" ]
+```
+
+Where:
+* **test_device** is the unique thing ID for the device (alpha numeric, no spaces)
+* **device name** is the name of the device (if omitted the name of the device will be specified as 'My Tivo') 
+* **address** the IP address or host name of the device
+
+See the Parameters section below, for the definition of the parameter fields / values.
 
 ## Channels
 
@@ -34,12 +47,32 @@ All devices support the following channels (non exhaustive):
 | tivoIRCommand | String | Remote Control Button (IRCOMMAND) | Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes. |
 | tivoKBDCommand | String | Keyboard Command (KEYBOARD) | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes. |
 | tivoStatus | String | TiVo Status | Action return code / channel information returned by the TiVo.  |
-| tivoStatus | String | Custom Command | Send any custom commands that are not documented within the official specification. Both the command and action string must be supplied. **Note: support is not provided for undocumented commands!**   |
+| tivoCommand | String | Custom Command | Send any custom commands that are not documented within the official specification. Both the command and action string must be supplied. **Note: support is not provided for undocumented commands!**   |
 
 * Commands to each of the channels (except 'Custom Command') do not need to include the command keyword only the action/parameter.  So to change channel simply post/send the number of the channel **without** SETCH or  FORCECH.
 * Custom Command is provided to allow the testing of any commands not documented within the official documentation.  In this instance the COMMAND and any parameters must be sent as a single string.
 * Keyboard commands must currently be issued one character at a time to the item (this is how the natively supports these command).  
 * Special characters must also be changed to the appropriate command e.g. the comma symbol( ,) must not be sent it should be replaced by 'COMMA'.
+
+
+## Parameters
+| Parameter  | Display Name | Description  |
+|------------|--------------|--- ----------|
+| deviceName | Device Name | A friendly name to refer to this device. Default: Device name specified on the TiVo or 'My Tivo' if no connection can be made at initial device configuration. |
+| address | Address | The IP address or hostname of your TiVo box |
+| tcpPort | TCP Port | The TCP port number used to connect to the TiVo. Default: 31339 |
+| numRetry | Connection Retries | The number of times to attempt reconnection to the TiVo box, if there is a connection failure. Default: 5 |
+| keepConActive | Keep Connection Open | Keep connection to the TiVo open. Recommended for monitoring the TiVo for changes in TV channels. Disable if other applications that use the Remote Control Protocol port will also be used e.g. mobile remote control applications. Default: True (Enabled) |
+| pollForChanges | Poll for Channel Changes | Check TiVo for channel changes. Enable if openHAB and a physical remote control (or other services use the Remote Control Protocol) will be used. Default: True (Enabled)|
+| pollInterval | Polling Interval (Seconds) | Number of seconds between polling jobs to update status information from the TiVo.  Default: 10" |
+| cmdWaitInterval | Command Wait Interval (Milliseconds) |  Period to wait AFTER a command is sent to the TiVo in milliseconds, before checking that the command has completed. Default: 200 |
+| ignoreChannels | Channels to Ignore | Used in channel up / down operations to avoid invalid or channels that are not part of your subscription. Skips the channels you list here in a comma separated list e.g. 109, 111, 999. You can exclude a range of channel numbers by using a hyphen between the lower and upper numbers e.g. 109, 101, 800-850, 999. <br><br>New entries do not have to be added in numeric order, these are sorted when saved. During normal channel changing operations, the maximum gap between valid channels is 10. <br><br>Any gap larger than 10 will not be learnt as you change channels under normal operation. If your service has a gap larger than 10 channels you should exclude these manually or **Perform Channel Scan**. |
+| minChannel | Min Channel Number | The first valid channel number available on the TiVo. Default: 100 (min 1) |
+| maxChannel | Max Channel Number | The last valid channel number available on the TiVo. Default: 999 (max 9999) |
+| ignoreChannelScan |  Channels to Ignore |Performs a channel scan between Min Channel Number and Max Channel Number, populates the **Channels to Ignore** settings any channels that are not accessible / part of your subscription.
+
+Note: Existing Channels to Ignore settings are retained, you will need to manually remove any entries for new channels added to your service (or remove all existing Channels to Ignore and run a new scan).|
+
 
 ## Configuration Parameters Notes
 The following notes may help to understand the correct configuration properties for your set-up:
@@ -66,7 +99,7 @@ The following notes may help to understand the correct configuration properties 
 String      TiVo_Status                                                                                                         {channel="tivo:sckt:Living_Room:tivoStatus"}
 String      TiVo_MenuScreen         "Menu Screens"                                                                              {channel="tivo:sckt:Living_Room:tivoTeleport", autoupdate="false"}
 Number      TiVo_SetPoint           "Up/Down"                                                                                   {channel="tivo:sckt:Living_Room:tivoChannelSet"}
-String      TiVo_SetPointName       "Channel Name [MAP(tivo.map):%s]"                                                           {channel="tivo:sckt:Living_Room:tivoChannelSet"}
+String      TiVo_SetPointName       "Channel Name"                                                           
 String      TiVo_IRCmd              "Ir Cmd"                                                                                    {channel="tivo:sckt:Living_Room:tivoIRCommand", autoupdate="false"}
 String      TiVo_KbdCmd             "Keyboard Cmd"                                                                              {channel="tivo:sckt:Living_Room:tivoKBDCommand", autoupdate="false"}
 
@@ -80,7 +113,7 @@ Switch      TiVo_Search
 ```
 sitemap TivoDemo label="Main Menu"
             Frame label="Tivo" {
-                Setpoint    item=TiVo_SetPoint          label="[CH %n]"         icon="television"   minValue=1 maxValue=999 step=1
+                Setpoint    item=TiVo_SetPoint          label="[CH %n]"         icon="television"   minValue=100 maxValue=999 step=1
                 Text        item=TiVo_SetPointName      label="Channel"         icon="television"
                 Text        item=TiVo_Status            label="Status"          icon="television"
                 Switch      item=TiVo_IRCmd             label="Media"           icon="television"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="⏵", "STOP"="⏹", "FORWARD"="⏩" ]
@@ -111,5 +144,20 @@ NULL=Unknown
 105=Channel 5
 
 etc...
+
+```
+
+####tivo.rules:
+The following rule uses the `tivo.map` file to translate the channel number to channel names (populating the `TiVo_SetPointName` item).
+```
+rule "MapChannel"
+when
+    Item TiVo_SetPoint changed
+then
+    var chName = ""
+    chName = transform("MAP", "tivo.map", TiVo_SetPoint.state.toString)
+    postUpdate(TiVo_SetPointName, chName)
+
+end
 
 ```

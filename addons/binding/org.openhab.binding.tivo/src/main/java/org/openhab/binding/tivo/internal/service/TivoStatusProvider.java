@@ -477,11 +477,13 @@ public class TivoStatusProvider {
                         }
                     } else {
                         // Socket creation failed...
-                        tivoHandler.setTivoStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Unable to connect or port already in-use");
-                        tivoStatusData.setConnOK(0);
-                        logger.warn(" connTivoConnectRetry '{}' - Socket creation failed.",
-                                tivoConfigData.getCfgIdentifier());
+                        if (tivoStatusData.getConnOK() != 0) {
+                            tivoHandler.setTivoStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Unable to connect or port already in-use");
+                            tivoStatusData.setConnOK(0);
+                            logger.warn(" connTivoConnectRetry '{}' - Socket creation failed.",
+                                    tivoConfigData.getCfgIdentifier());
+                        }
                     }
 
                     if (iL == tivoConfigData.getCfgNumConnRetry()) {
@@ -564,8 +566,10 @@ public class TivoStatusProvider {
                 logger.error(" TiVo '{}' - while connecting, unexpected host error: '{}'",
                         tivoConfigData.getCfgIdentifier(), e.getMessage());
             } catch (IOException e) {
-                logger.error(" TiVo '{}' - I/O exception while connecting: '{}'", tivoConfigData.getCfgIdentifier(),
-                        e.getMessage());
+                if (tivoStatusData.getConnOK() != 0) {
+                    logger.error(" TiVo '{}' - I/O exception while connecting: '{}'", tivoConfigData.getCfgIdentifier(),
+                            e.getMessage());
+                }
             }
             return false;
         }
