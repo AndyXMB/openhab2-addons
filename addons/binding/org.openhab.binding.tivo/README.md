@@ -177,9 +177,9 @@ then
         // Commands to get us to the Tivo/Home menu and select the search menu using the 'remote'
         // number keys
         sendCommand(TiVo_MenuScreen, "TIVO")
-        Thread::sleep(600)
+        Thread::sleep(800)
         sendCommand(TiVo_KbdCmd, "NUM4")
-        Thread::sleep(600)
+        Thread::sleep(800)
         
         var i = 0
         var l = 0
@@ -211,7 +211,7 @@ then
                         sendCommand(TiVo_KbdCmd, "NUM9*5")
                         }
                     default: {
-                        sendCommand(TiVo_KbdCmd, "NUM" + txt.toString + "*5")
+                        sendCommand(TiVo_KbdCmd, "NUM" + txt.toString + "*4")
                         }
                 }
             } else {
