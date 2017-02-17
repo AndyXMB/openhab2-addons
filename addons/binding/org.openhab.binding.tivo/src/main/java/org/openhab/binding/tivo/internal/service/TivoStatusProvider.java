@@ -168,6 +168,7 @@ public class TivoStatusProvider {
 
         logger.info(" TiVo '{}' - sending command: '{}' (retry @ '{}')", tivoConfigData.getCfgIdentifier(), pCmd,
                 retryCount);
+        int l = 1;
 
         if (!connTestSocket()) {
             logger.error(" TiVo '{}' - called setTivoStatus but not connected!", tivoConfigData.getCfgIdentifier());
@@ -175,24 +176,31 @@ public class TivoStatusProvider {
         }
 
         try {
-            tivoIOSendCommand.println(pCmd.toString() + "\r");
-            // flushes the command buffer AND returns true if there is a problem
-            if (tivoIOSendCommand.checkError()) {
-                logger.error(" TiVo '{}' - called setTivoStatus and encountered an IO error",
-                        tivoConfigData.getCfgIdentifier(), tivoSocket.isConnected(), tivoSocket.isClosed());
+            // Handle special keyboard "repeat" commands
+            if (pCmd.contains("*")) {
+                l = Integer.parseInt(pCmd.substring(pCmd.indexOf("*") + 1));
+                pCmd = pCmd.substring(0, pCmd.indexOf("*"));
+                logger.info(" TiVo '{}' - repeating command: '{}' repeating '{}' times",
+                        tivoConfigData.getCfgIdentifier(), pCmd, l);
+            }
+            for (int i = 1; i <= l; i++) {
+                tivoIOSendCommand.println(pCmd.toString() + "\r");
+                if (tivoIOSendCommand.checkError()) {
 
-                connTivoConnectRetry(false); // close connection
-                connTivoConnectRetry(true); // open a new connection
+                    logger.error(" TiVo '{}' - called setTivoStatus and encountered an IO error",
+                            tivoConfigData.getCfgIdentifier(), tivoSocket.isConnected(), tivoSocket.isClosed());
+                    connTivoConnectRetry(false);
+                    connTivoConnectRetry(true);
 
-                if (retryCount <= 0) {
-                    // We have failed at life... Give up.
-                    return new TivoStatusData(false, -1, "CONNECTION_RETRIES_EXHAUSTED", false, 0);
+                    if (retryCount <= 0) {
+                        // We have failed at life... Give up.
+                        return new TivoStatusData(false, -1, "CONNECTION_RETRIES_EXHAUSTED", false, 0);
 
-                } else {
-                    doNappTime();
-                    return cmdTivoSendRetry(pCmd, retryCount - 1);
+                    } else {
+                        doNappTime();
+                        return cmdTivoSendRetry(pCmd, retryCount - 1);
+                    }
                 }
-
             }
 
         } catch (Exception e) {

@@ -49,7 +49,8 @@ All devices support the following channels (non exhaustive):
 
 * Commands to each of the channels (except 'Custom Command') do not need to include the command keyword only the action/parameter.  So to change channel simply post/send the number of the channel **without** SETCH or  FORCECH.
 * Custom Command is provided to allow the testing of any commands not documented within the official documentation.  In this instance the COMMAND and any parameters must be sent as a single string.
-* Keyboard commands must currently be issued one character at a time to the item (this is how the natively supports these command).  
+* Keyboard commands must currently be issued one character at a time to the item (this is how the natively supports these command).
+* To send multiple copies of the same Keyboard command, append a asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2. See the search script below for an example of this in action.
 * Special characters must also be changed to the appropriate command e.g. the comma symbol( ,) must not be sent it should be replaced by 'COMMA'.
 
 
@@ -159,3 +160,70 @@ then
 end
 
 ```
+
+The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the TiVo.  The method to send a keystroke multiple times is used to simulate rapid keystrokes required to achieve number based searched.  
+
+A simple custom template widget can be used within the HABpanel user interface for tablet based searches.  See [this discussion thread] (https://community.openhab.org/t/tivo-1-1-protocol-new-binding-contribution/5572/21?u=andymb).
+
+
+```
+rule "Search"
+when
+    Item TiVo_KeyboardStr received command
+then
+    logInfo("tivo.search","Script started ")
+    if (TiVo_KeyboardStr.state != NULL && TiVo_KeyboardStr.state.toString.length > 0) {
+        
+        // Commands to get us to the Tivo/Home menu and select the search menu using the 'remote'
+        // number keys
+        sendCommand(TiVo_MenuScreen, "TIVO")
+        Thread::sleep(600)
+        sendCommand(TiVo_KbdCmd, "NUM4")
+        Thread::sleep(600)
+        
+        var i = 0
+        var l = 0
+        var char txt = ""
+        var srch = TiVo_KeyboardStr.state.toString.toUpperCase
+        logInfo("tivo.search"," Searching for: " + srch)
+        logDebug("tivo.search"," Search length: " + srch.length)
+
+        while (i < (srch.length)) {
+            logDebug("tivo.search"," Loop i=: " + i)
+            txt = srch.charAt(i)
+            logDebug("tivo.search"," txt: " + txt.toString)
+            if (txt.toString.matches("[A-Z]")) {
+                // Check for upper case A-Z
+                sendCommand(TiVo_KbdCmd, txt.toString)
+            } else if (txt.toString.matches(" ")) {
+                // Check for Space
+                sendCommand(TiVo_KbdCmd, "SPACE")
+            } else if (txt.toString.matches("[0-9]")) {
+                // Check for numbers 0-9
+                l = 0
+                switch txt.toString {
+                    case "1":
+                        sendCommand(TiVo_KbdCmd, "NUM1")
+                    case "7": {
+                        sendCommand(TiVo_KbdCmd, "NUM7*5")
+                        }
+                    case "9": {
+                        sendCommand(TiVo_KbdCmd, "NUM9*5")
+                        }
+                    default: {
+                        sendCommand(TiVo_KbdCmd, "NUM" + txt.toString + "*5")
+                        }
+                }
+            } else {
+                logWarn("tivo.search"," Character not supported by script: " + txt)
+            }
+            i = i + 1
+        }
+    }
+    lock.unlock()
+end
+
+```
+
+
+
