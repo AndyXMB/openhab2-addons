@@ -38,7 +38,7 @@ See the Parameters section below, for the definition of the parameter fields / v
 All devices support the following channels (non exhaustive):
 
 | Channel Type ID | Item Type    | Display Name | Description  |
-|-----------------|------------------------|--------------|----------------- |
+|-----------------|--------------|--------------|------------- |
 | tivoChannelForce | Number (1-9999)| Current Channel - Forced (FORCECH) | Displays the current channel number. When changed, tunes the DVR to the specified channel, **cancelling any recordings in progress if necessary** i.e. when all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work. |
 | tivoChannelSet | Number (1-9999)| Current Channel - Request (SETCH) | Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. |
 | tivoTeleport | String | Change Special/Menu Screen (TELEPORT) |Change to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My Shows). |
