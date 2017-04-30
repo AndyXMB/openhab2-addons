@@ -82,7 +82,7 @@ control of channel changes, user interface navigation and allow the client to se
             <parameter name="ignoreChannelScan" type="boolean">
                 <default>false</default>
                 <label>Perform Channel Scan</label>
-                <description>Performs a channel scan between <![CDATA[ <b> ]]> Min Channel Number <![CDATA[ </b> ]]> and <![CDATA[ <b> ]]> Max Channel Number <![CDATA[ </b> ]]>, populates the <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> settings any channels that are not accessible / part of your subscription.  <![CDATA[ <p><p><b> ]]> Note: <![CDATA[ </b> ]]> Existing <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> settings are retained, you will need to manually remove any entries for new channels added to your service (or remove all existing <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> and run a new scan).<![CDATA[ <br /><br /><b> ]]>Default: false<![CDATA[ </b> ]]></description>
+                <description>Performs a channel scan between <![CDATA[ <b> ]]> Min Channel Number<![CDATA[ </b> ]]> and <![CDATA[ <b> ]]> Max Channel Number<![CDATA[ </b> ]]>, populates the <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> settings any channels that are not accessible / part of your subscription.  <![CDATA[ <p><p><b> ]]> Note: <![CDATA[ </b> ]]> Existing <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> settings are retained, you will need to manually remove any entries for new channels added to your service (or remove all existing <![CDATA[ <b> ]]> Channels to Ignore <![CDATA[ </b> ]]> and run a new scan).<![CDATA[ <br /><br /><b> ]]>Default: false<![CDATA[ </b> ]]></description>
             </parameter>
         </config-description>
     </thing-type>

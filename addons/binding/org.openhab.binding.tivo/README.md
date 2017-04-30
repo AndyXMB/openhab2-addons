@@ -86,8 +86,8 @@ The following notes may help to understand the correct configuration properties 
  4. The **Channels to Ignore** section allows you to exclude any channels that you do not want to see or are not part of your subscription.  Both individual channel numbers and ranges of channels are supported e.g. 109, 106, 801-850, 999.
  5.  **Perform Channel Scan** will systematically change the channels between the specified Minimum and Maximum, identifying which of these are valid.  At least one tuner must be available (not recording) while this operation completes.  If this process is interrupted e.g. by a configuration change or restart, the system will restart the scan at the beginning.  Any channels that are marked as being ignored will not be tested again.  
  6. You can run a channel scan while the system is in Standby mode.
- 6. The channel scanning process will take approximately 1 second per channel.  With the default channel range a scan will therefore take between 15 and 20 minutes!  The screen will change to the specified channel while the scan is being run.
- 6. If your provider adds new channels to your subscription line-up, these will have to be manually removed from the list of **Channels to Ignore**.  You can always remove all the entries and do a full scan again.
+ 6. The channel scanning process will take approximately 2 seconds per channel.  With the default channel range a scan will therefore take between 15 and 20 minutes!  The screen will change to the specified channel while the scan is being run.
+ 6. If your provider adds new channels to your subscription line-up, these will have to be manually removed from the list of **Channels to Ignore**.  You can always remove all the entries and do a new full scan to re-populate the list.
 
 ## Full Example
 
