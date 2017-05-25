@@ -74,11 +74,11 @@ All devices support the following channels (non exhaustive):
 ## Configuration Parameters Notes
 The following notes may help to understand the correct configuration properties for your set-up:
 
-###Connection Performance###
+### Connection Performance
 * If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your Tivo, enable the **Keep Connection Open** option.  This will connect and lock the port in-use preventing any other device from connecting it.  If you use some other application, disable this option.  Performance is improved if the connection is kept open.
 * **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.  Turning polling off, minimises the periodic overhead on your hardware.
  
- ###Channel Changing###
+### Channel Changing
 * Set the correct Minimum and Maximum channel numbers BEFORE you run a full channel scan.  By default these are set at 100 and 999.   Consult your Tivo program guide to find these.
 * The TiVo will learn channel numbers that are not available as part of your subscription as you navigate / change channel.  Channel changing  operations will be slower if there is a large gap between valid channels.  Any gap between valid channel number must not exceed 10.  If you have a gap larger than this any channel UP/DOWN operations will fail.  You must therefore add any of these gaps to the range of **Channels to Ignore** manually or use the **Perform Channel Scan** option to pre-populate the ignored channels (recommended).
 * The **Channels to Ignore** section allows you to exclude any channels that you do not want to see or are not part of your subscription.  Both individual channel numbers and ranges of channels are supported e.g. 109, 106, 801-850, 999.
@@ -89,7 +89,7 @@ The following notes may help to understand the correct configuration properties 
 
 ## Full Example
 
-####demo.items:
+###demo.items:
 
 ```
 /* TIVO */
@@ -104,7 +104,7 @@ Switch      TiVo_Search
 ```
 * The item 'TiVo_SetPointName' depends upon a valid tivo.map file to translate channel numbers to channel names.
 
-####TivoDemo.sitemap:
+###TivoDemo.sitemap:
 
 ```
 sitemap TivoDemo label="Main Menu"
@@ -129,7 +129,7 @@ sitemap TivoDemo label="Main Menu"
 * This example does not use the 'Current Channel - Forced (FORCECH)' channel.  This method will interrupt your recordings in progress when all you tuners are busy, so is obmitted for safety's sake.
 * The item 'TiVo_SetPointName' depends upon a valid tivo.map file to translate channel numbers to channel names.
 
-####tivo.map:
+###tivo.map:
 ```
 NULL=Unknown
 100=Virgin Media Previews
@@ -143,7 +143,7 @@ etc...
 
 ```
 
-####tivo.rules:
+###tivo.rules:
 The following rule uses the `tivo.map` file to translate the channel number to channel names (populating the `TiVo_SetPointName` item).
 ```
 rule "MapChannel"
