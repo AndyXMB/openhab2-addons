@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
+//import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -35,18 +35,20 @@ import org.slf4j.LoggerFactory;
 
 public class TiVoHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(TiVoHandlerFactory.class);
+
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TIVO);
-    private DiscoveryServiceRegistry discoveryServiceRegistry;
 
-    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        logger.debug("TiVo handler - setDiscoveryServiceRegistry was called");
-        this.discoveryServiceRegistry = discoveryServiceRegistry;
-    }
-
-    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        logger.debug("TiVo handler - unsetDiscoveryServiceRegistry was called");
-        this.discoveryServiceRegistry = null;
-    }
+    // private DiscoveryServiceRegistry discoveryServiceRegistry;
+    //
+    // protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
+    // logger.debug("TiVo handler - setDiscoveryServiceRegistry was called");
+    // this.discoveryServiceRegistry = discoveryServiceRegistry;
+    // }
+    //
+    // protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
+    // logger.debug("TiVo handler - unsetDiscoveryServiceRegistry was called");
+    // this.discoveryServiceRegistry = null;
+    // }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -57,11 +59,9 @@ public class TiVoHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
         if (thingTypeUID.equals(THING_TYPE_TIVO)) {
             return new TiVoHandler(thing);
         }
-
         return null;
     }
 

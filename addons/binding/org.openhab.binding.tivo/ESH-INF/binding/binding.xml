@@ -6,6 +6,6 @@
 
     <name>TiVo DVR Controller</name>
     <description>This is used to monitor current channel and remotely control a TiVo DVR</description>
-    <author>Jayson Kubilis</author>
+    <author>Jayson Kubilis / Andrew Black</author>
 
 </binding:binding>

@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 public class TiVoHandler extends BaseThingHandler {
     private Logger logger = LoggerFactory.getLogger(TiVoHandler.class);
-    // private TivoStatusData tivoStatusData = null;
     private TivoConfigData tivoCfgData = null;
     private TivoStatusProvider myTivoService = null;
     private ScheduledFuture<?> refreshJob;
@@ -195,6 +194,28 @@ public class TiVoHandler extends BaseThingHandler {
         }
     }
 
+    public void invalidConfig() {
+        updateStatus(ThingStatus.OFFLINE);
+    }
+
+    int confValueToInt(Object value) {
+        if (value instanceof java.math.BigDecimal) {
+            return ((java.math.BigDecimal) value).intValue();
+        }
+        if (value instanceof String) {
+            return Integer.valueOf((String) value);
+        }
+        if (value instanceof Double) {
+            return ((Double) value).intValue();
+        }
+
+        return Integer.valueOf((Integer) value);
+    }
+
+    boolean confValueToBoolean(Object value) {
+        return value instanceof Boolean ? ((Boolean) value) : Boolean.valueOf((String) value);
+    }
+
     @Override
     public void initialize() {
 
@@ -202,38 +223,97 @@ public class TiVoHandler extends BaseThingHandler {
 
         Configuration conf = this.getConfig();
         TivoConfigData tivoConfig = new TivoConfigData();
-        tivoConfig.setCfgHost(String.valueOf(conf.get(CONFIG_ADDRESS)));
-        tivoConfig.setCfgTcpPort(Integer.parseInt(String.valueOf(conf.get(CONFIG_PORT))));
-        tivoConfig.setCfgNumConnRetry(Integer.parseInt(String.valueOf(conf.get(CONFIG_CONNECTION_RETRY))));
-        tivoConfig.setCfgPollInterval(Integer.parseInt(String.valueOf(conf.get(CONFIG_POLL_INTERVAL))));
-        tivoConfig.setCfgPollChanges(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_POLL_FOR_CHANGES))));
-        tivoConfig.setCfgKeepConnOpen(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_KEEP_CONNECTION_OPEN))));
-        tivoConfig.setCfgCmdWait(Integer.parseInt(String.valueOf(conf.get(CONFIG_CMD_WAIT_INTERVAL))));
-        tivoConfig.setCfgMinChannel(Integer.parseInt(String.valueOf(conf.get(CONFIG_CH_START))));
-        tivoConfig.setCfgMaxChannel(Integer.parseInt(String.valueOf(conf.get(CONFIG_CH_END))));
-        tivoConfig.setCfgIgnoreChannelScan(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_IGNORE_SCAN))));
-        tivoConfig.setCfgIdentifier(String.valueOf(getThing().getUID()));
-        tivoConfig.setCfgIgnoreChannels(chParseIgnored(String.valueOf(conf.get(CONFIG_IGNORE_CHANNELS)),
-                tivoConfig.getCfgMinChannel(), tivoConfig.getCfgMaxChannel()));
+        // tivoConfig.setCfgHost(String.valueOf(conf.get(CONFIG_ADDRESS)));
+        // tivoConfig.setCfgTcpPort(Integer.parseInt(String.valueOf(conf.get(CONFIG_PORT))));
+        // tivoConfig.setCfgNumConnRetry(Integer.parseInt(String.valueOf(conf.get(CONFIG_CONNECTION_RETRY))));
+        // tivoConfig.setCfgPollInterval(Integer.parseInt(String.valueOf(conf.get(CONFIG_POLL_INTERVAL))));
+        // tivoConfig.setCfgPollChanges(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_POLL_FOR_CHANGES))));
+        // tivoConfig.setCfgKeepConnOpen(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_KEEP_CONNECTION_OPEN))));
+        // tivoConfig.setCfgCmdWait(Integer.parseInt(String.valueOf(conf.get(CONFIG_CMD_WAIT_INTERVAL))));
+        // tivoConfig.setCfgMinChannel(Integer.parseInt(String.valueOf(conf.get(CONFIG_CH_START))));
+        // tivoConfig.setCfgMaxChannel(Integer.parseInt(String.valueOf(conf.get(CONFIG_CH_END))));
+        // tivoConfig.setCfgIgnoreChannelScan(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_IGNORE_SCAN))));
+        // tivoConfig.setCfgIdentifier(String.valueOf(getThing().getUID()));
+        // tivoConfig.setCfgIgnoreChannels(chParseIgnored(String.valueOf(conf.get(CONFIG_IGNORE_CHANNELS)),
+        // tivoConfig.getCfgMinChannel(), tivoConfig.getCfgMaxChannel()));
+
+        Object value;
+        value = conf.get(CONFIG_ADDRESS);
+        if (value != null) {
+            tivoConfig.setCfgHost(String.valueOf(value));
+        }
+
+        value = conf.get(CONFIG_PORT);
+        if (value != null) {
+            tivoConfig.setCfgTcpPort(confValueToInt(value));
+        }
+
+        value = conf.get(CONFIG_CONNECTION_RETRY);
+        if (value != null) {
+            tivoConfig.setCfgNumConnRetry(confValueToInt(value));
+        }
+
+        value = conf.get(CONFIG_POLL_INTERVAL);
+        if (value != null) {
+            tivoConfig.setCfgPollInterval(confValueToInt(value));
+        }
+
+        value = conf.get(CONFIG_POLL_FOR_CHANGES);
+        if (value != null) {
+            tivoConfig.setCfgPollChanges(confValueToBoolean(value));
+        }
+
+        value = conf.get(CONFIG_KEEP_CONNECTION_OPEN);
+        if (value != null) {
+            tivoConfig.setCfgKeepConnOpen(confValueToBoolean(value));
+        }
+
+        value = conf.get(CONFIG_CMD_WAIT_INTERVAL);
+        if (value != null) {
+            tivoConfig.setCfgCmdWait(confValueToInt(value));
+        }
+
+        value = conf.get(CONFIG_CH_START);
+        if (value != null) {
+            tivoConfig.setCfgMinChannel(confValueToInt(value));
+        }
+
+        value = conf.get(CONFIG_CH_END);
+        if (value != null) {
+            tivoConfig.setCfgMaxChannel(confValueToInt(value));
+        }
+
+        value = conf.get(CONFIG_IGNORE_SCAN);
+        if (value != null) {
+            tivoConfig.setCfgIgnoreChannelScan(confValueToBoolean(value));
+        }
+
+        value = getThing().getUID();
+        if (value != null) {
+            tivoConfig.setCfgIdentifier(String.valueOf(value));
+        }
+
+        value = conf.get(CONFIG_IGNORE_CHANNELS);
+        if (value != null) {
+            tivoConfig.setCfgIgnoreChannels(chParseIgnored(String.valueOf(conf.get(CONFIG_IGNORE_CHANNELS)),
+                    tivoConfig.getCfgMinChannel(), tivoConfig.getCfgMaxChannel()));
+        }
 
         logger.debug("TivoConfigData Obj: '{}'", tivoConfig.toString());
         tivoCfgData = tivoConfig;
-        // tivoStatusData = new TivoStatusData(false, -1, "INITIALISING", false, false);
 
         if (myTivoService == null) {
-            // myTivoService = new TivoStatusProvider(tivoCfgData, tivoStatusData, this, false);
             myTivoService = new TivoStatusProvider(tivoCfgData, this, false);
         }
 
         if (tivoConfig.getCfgIgnoreChannelScan()) {
-            // We want to create a job to scan all of the channels
             startChannelScan();
 
         } else if (tivoConfig.isCfgPollChanges()) {
-            // We want a regular status polling or an initial call to get the status
             startPollStatus();
         }
 
+        updateStatus(ThingStatus.OFFLINE);
         myTivoService.statusRefresh();
         logger.debug("Initializing a TiVo handler for thing '{}' - finished!", getThing().getUID());
 
