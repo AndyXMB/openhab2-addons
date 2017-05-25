@@ -1,5 +1,4 @@
 ## TiVo Binding
-
 This binding integrates [TiVo](https://www.tivo.com/) Digital Video Recorders (DVR) that support the Tivo [TiVo TCP Control Protocol v1.1](https://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf).
 
 ## Supported Things
@@ -23,7 +22,7 @@ You can also add these manually, you will need to specify the LAN IP address of 
 Auto-discovery is recommended for the discovery and creation of TiVo things, however they can also be created using the .things file format.  The following minimum parameters should be used:
 
 ```
-Thing tivo:sckt:test_device [ deviceName = "Test Device", address="192.168.0.19" ]
+Thing tivo:sckt:test_device[deviceName = "Test Device", address="192.168.0.19"]
 ```
 
 Where:
@@ -31,7 +30,7 @@ Where:
 * **device name** is the name of the device (if omitted the name of the device will be specified as 'My Tivo') 
 * **address** the IP address or host name of the device
 
-See the Parameters section below, for the definition of the parameter fields / values.
+See the Parameters section below, for the definition of the other optional parameter field names / values.
 
 ## Channels
 
@@ -47,7 +46,7 @@ All devices support the following channels (non exhaustive):
 | tivoStatus | String | TiVo Status | Action return code / channel information returned by the TiVo.  |
 | tivoCommand | String | Custom Command | Send any custom commands that are not documented within the official specification. Both the command and action string must be supplied. **Note: support is not provided for undocumented commands!**   |
 
-* Commands to each of the channels (except 'Custom Command') do not need to include the command keyword only the action/parameter.  For example, to change channel simply post/send the number of the channel **without** the keywords SETCH or  FORCECH .
+* Commands to each of the channels (except 'Custom Command') do not need to include the command keyword only the action/parameter.  For example, to change channel simply post/send the number of the channel **without** the keywords SETCH or  FORCECH.
 * Custom Command is provided to allow the testing of any commands not documented within the official documentation.  In this instance the COMMAND and any parameters must be sent as a single string.
 * Keyboard commands must currently be issued one character at a time to the item (this is how the TiVo natively supports these command).
 * To send multiple copies of the same Keyboard command, append a asterisk with the number of repeats required e.g. NUM2*4 would send the number 2 four times. This is useful for performing searches where the number characters can only be accessed by pressing the keys multiple times in rapid succession i.e. each key press cycles through characters A, B, C, 2. See the search script below for an example of this in action.
@@ -58,42 +57,48 @@ All devices support the following channels (non exhaustive):
 | Parameter  | Display Name | Description  |
 |------------|--------------|-------------|
 | deviceName | Device Name | A friendly name to refer to this device. Default: Device name specified on the TiVo or 'My Tivo' if no connection can be made at initial device configuration. |
-| address | Address | The IP address or hostname of your TiVo box |
+| address | Address | The IP address or hostname of your TiVo box. |
 | tcpPort | TCP Port | The TCP port number used to connect to the TiVo. Default: 31339 |
-| numRetry | Connection Retries | The number of times to attempt reconnection to the TiVo box, if there is a connection failure. Default: 5 |
-| keepConActive | Keep Connection Open | Keep connection to the TiVo open. Recommended for monitoring the TiVo for changes in TV channels. Disable if other applications that use the Remote Control Protocol port will also be used e.g. mobile remote control applications. Default: True (Enabled) |
+| numRetry | Connection Retries | The number of times to attempt reconnection to the TiVo box, if there is a connection failure. **Default: 5** |
+| keepConActive | Keep Connection Open | Keep connection to the TiVo open. Recommended for monitoring the TiVo for changes in TV channels. <br><br>Disable if other applications that use the Remote Control Protocol port will also be used e.g. mobile phone remote control applications. **Default: True (Enabled)** |
 | pollForChanges | Poll for Channel Changes | Check TiVo for channel changes. Enable if openHAB and a physical remote control (or other services use the Remote Control Protocol) will be used. Default: True (Enabled)|
-| pollInterval | Polling Interval (Seconds) | Number of seconds between polling jobs to update status information from the TiVo.  Default: 10" |
-| cmdWaitInterval | Command Wait Interval (Milliseconds) |  Period to wait AFTER a command is sent to the TiVo in milliseconds, before checking that the command has completed. Default: 200 |
-| ignoreChannels | Channels to Ignore | Used in channel up / down operations to avoid invalid or channels that are not part of your subscription. Skips the channels you list here in a comma separated list e.g. 109, 111, 999. You can exclude a range of channel numbers by using a hyphen between the lower and upper numbers e.g. 109, 101, 800-850, 999. <br><br>New entries do not have to be added in numeric order, these are sorted when saved. During normal channel changing operations, the maximum gap between valid channels is 10. <br><br>Any gap larger than 10 will not be learnt as you change channels under normal operation. If your service has a gap larger than 10 channels you should exclude these manually or **Perform Channel Scan**. |
-| minChannel | Min Channel Number | The first valid channel number available on the TiVo. Default: 100 (min 1) |
-| maxChannel | Max Channel Number | The last valid channel number available on the TiVo. Default: 999 (max 9999) |
-| ignoreChannelScan |  Channels to Ignore |Performs a channel scan between Min Channel Number and Max Channel Number, populates the **Channels to Ignore** settings any channels that are not accessible / part of your subscription. Note: Existing Channels to Ignore settings are retained, you will need to manually remove any entries for new channels added to your service (or remove all existing Channels to Ignore and run a new scan).|
+| pollInterval | Polling Interval (Seconds) | Number of seconds between polling jobs to update status information from the TiVo.  **Default: 10** |
+| cmdWaitInterval | Command Wait Interval (Milliseconds) |  Period to wait AFTER a command is sent to the TiVo in milliseconds, before checking that the command has completed. **Default: 200** |
+| ignoreChannels | Channels to Ignore | Used in channel UP/DOWN operations to avoid invalid channel numbers that are not part of your subscription (these impact the speed of changing channels). Channels you list in a comma separated list e.g. 109, 111, 999 are skipped/ignored when changing the channel UP or DOWN.<br><br>You can also exclude a range of channel numbers by using a hyphen between the lower and upper numbers e.g. 109, 101, 800-850, 999. New entries are sorted into numerical order when saved. <br><br>During normal channel changing operations any invalid channels detected are automatically learnt and added to this list, however the maximum gap for 'auto learning' between valid channels is 10. <br><br>Any gap larger than this will not be automatically learnt and the Channel UP/DOWN operation will fail. If your service has gap(s) larger than 10 channels, you should exclude these manually or use the Perform Channel Scan function to populate this list. |
+| minChannel | Min Channel Number | The first valid channel number available on the TiVo. **Default: 100 (min 1)** |
+| maxChannel | Max Channel Number | The last valid channel number available on the TiVo. **Default: 999 (max 9999)** |
+| ignoreChannelScan |  Channels to Ignore |Performs a channel scan between Min Channel Number and Max Channel Number, populates the **Channels to Ignore** settings any channels that are not accessible / part of your subscription. <br><br>**Note:** Existing Channels to Ignore settings are retained, you will need to manually remove any entries for new channels added to your service (or remove all existing Channels to Ignore and run a new scan).|
 
 
 ## Configuration Parameters Notes
 The following notes may help to understand the correct configuration properties for your set-up:
 
 ### Connection Performance
-* If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your Tivo, enable the **Keep Connection Open** option.  This will connect and lock the port in-use preventing any other device from connecting it.  If you use some other application, disable this option.  Performance is improved if the connection is kept open.
-* **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.  Turning polling off, minimises the periodic overhead on your hardware.
+* If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your Tivo, enable the **Keep Connection Open** option.  This will connect and lock the port in-use preventing any other device from connecting it.  If you use some other application, disable this option. Performance is improved if the connection is kept open.
+* **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or other application to change channel.  If openHAB is your only method of control, you can disable this option.  Turning polling off, minimises the periodic polling overhead on your hardware.
  
 ### Channel Changing
-* Set the correct Minimum and Maximum channel numbers BEFORE you run a full channel scan.  By default these are set at 100 and 999.   Consult your Tivo program guide to find these.
+* You can set the current channel using the item bound to either the `tivoChannelForce` or the `tivoChannelSet` by simply posting/sending the channel number to the item.
+* Channel UP/DOWN commands work by increasing to decreasing the channel number stored within the `tivoChannelSet` channel.  This item must contain a value for this to work.  
 * The TiVo will learn channel numbers that are not available as part of your subscription as you navigate / change channel.  Channel changing  operations will be slower if there is a large gap between valid channels.  Any gap between valid channel number must not exceed 10.  If you have a gap larger than this any channel UP/DOWN operations will fail.  You must therefore add any of these gaps to the range of **Channels to Ignore** manually or use the **Perform Channel Scan** option to pre-populate the ignored channels (recommended).
 * The **Channels to Ignore** section allows you to exclude any channels that you do not want to see or are not part of your subscription.  Both individual channel numbers and ranges of channels are supported e.g. 109, 106, 801-850, 999.
+* Set the correct Minimum and Maximum channel numbers BEFORE you run a full channel scan.  By default these are set at 100 and 999.   Consult your Tivo program guide to find these.
 * **Perform Channel Scan** will systematically change the channels between the specified Minimum and Maximum, identifying which of these are valid.  At least one tuner must be available (not recording) while this operation completes.  If this process is interrupted e.g. by a configuration change or restart, the system will restart the scan at the beginning.  Any channels that are marked as being ignored will not be tested again.  
-* You can run a channel scan while the system is in Standby mode.
+* You can run a channel scan while the system is in Standby mode.  
+* The channels will change 'onscreen' while you run a channel scan while the TiVo is in normal operation (it will not however cancel any recordings in progress if all tuners are busy recording).  Therefore, you should avoid running a scan when someone is watching their favorite shows!  If all channels are in use or recordings start on all available tuners the channel scan will stop/fail.
 * The channel scanning process will take approximately 2 seconds per channel.  With the default channel range a scan will therefore take between 15 and 20 minutes!  The screen will change to the specified channel while the scan is being run.
+* If the channel scan fails before completing, you may need to increase the `Command Wait Interval (Milliseconds)'.  A value between 200 (default) and 400 seems to work in testing.  
+* When restarting after a failed channel scan all valid channels will be re-tested, but any existing **Channels to Ignore** will be skipped.
 * If your provider adds new channels to your subscription line-up, these will have to be manually removed from the list of **Channels to Ignore**.  You can always remove all the entries and do a new full scan to re-populate the list.
+
 
 ## Full Example
 
-###demo.items:
+**demo.items:**
 
 ```
 /* TIVO */
-String      TiVo_Status         "Status"    channel="tivo:sckt:Living_Room:tivoStatus"}
+String      TiVo_Status         "Status"        {channel="tivo:sckt:Living_Room:tivoStatus"}
 String      TiVo_MenuScreen     "Menu Screens"  {channel="tivo:sckt:Living_Room:tivoTeleport", autoupdate="false"}
 Number      TiVo_SetPoint       "Up/Down"       {channel="tivo:sckt:Living_Room:tivoChannelSet"}
 String      TiVo_SetPointName   "Channel Name"                                                           
@@ -102,9 +107,9 @@ String      TiVo_KbdCmd         "Keyboard Cmd"  {channel="tivo:sckt:Living_Room:
 String      TiVo_KeyboardStr    "Search String"
 Switch      TiVo_Search
 ```
-* The item 'TiVo_SetPointName' depends upon a valid tivo.map file to translate channel numbers to channel names.
+* The item `TiVo_SetPointName` depends upon a valid `tivo.map` file to translate channel numbers to channel names.  **Hint:**  I sourced my channel listing from a very handy Wikipedia page for VirginMedia services.
 
-###TivoDemo.sitemap:
+**TivoDemo.sitemap:**
 
 ```
 sitemap TivoDemo label="Main Menu"
@@ -129,7 +134,7 @@ sitemap TivoDemo label="Main Menu"
 * This example does not use the 'Current Channel - Forced (FORCECH)' channel.  This method will interrupt your recordings in progress when all you tuners are busy, so is obmitted for safety's sake.
 * The item 'TiVo_SetPointName' depends upon a valid tivo.map file to translate channel numbers to channel names.
 
-###tivo.map:
+**tivo.map:**
 ```
 NULL=Unknown
 100=Virgin Media Previews
@@ -143,7 +148,7 @@ etc...
 
 ```
 
-###tivo.rules:
+**tivo.rules:**
 The following rule uses the `tivo.map` file to translate the channel number to channel names (populating the `TiVo_SetPointName` item).
 ```
 rule "MapChannel"
@@ -157,6 +162,9 @@ then
 end
 
 ```
+
+* This rule was used to overcome limitations within the HABpanel user interface at the moment when using transform/map functionality.
+
 
 The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the TiVo.  The method to send a keystroke multiple times is used to simulate rapid keystrokes required to achieve number based searched.  
 
@@ -221,3 +229,5 @@ then
 end
 
 ```
+
+* You many need to adjust the two `Thread::sleep(800)` lines, depending on the performance of your TiVo/response from your service providers systems.  <br><br>In testing, response times have varied considerably at different times of the day etc.  You may need to increase the delay until there is sufficient time added for the system to respond consistently to the 'remote control' menu commands.
