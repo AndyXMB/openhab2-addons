@@ -55,8 +55,7 @@ public class TivoStatusProvider {
      * @param tivoHandler {@link TivoHandler} parent handler object for the TivoConfigStatusProvider.
      * @param pausePolling boolean true=skip process normally run while other actions are completed.
      */
-    // public TivoStatusProvider(TivoConfigData tivoConfigData, TivoStatusData tivoStatusData, TiVoHandler tivoHandler,
-    // Boolean pausePolling) {
+
     public TivoStatusProvider(TivoConfigData tivoConfigData, TiVoHandler tivoHandler, Boolean pausePolling) {
         this.tivoStatusData = new TivoStatusData(false, -1, "INITIALISING", false);
         this.tivoConfigData = tivoConfigData;

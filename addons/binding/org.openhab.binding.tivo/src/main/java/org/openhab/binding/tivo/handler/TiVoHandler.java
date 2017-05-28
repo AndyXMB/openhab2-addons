@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the Tivo's channels.
  *
  * @author Jayson Kubilis - Initial contribution
- * @author Andrew Black - Updates / compilation corrections. Addition of channel scanning functionality.
+ * @author Andrew Black (AndyXMB) - Updates / compilation corrections. Addition of channel scanning functionality.
  */
 
 public class TiVoHandler extends BaseThingHandler {
@@ -223,19 +223,6 @@ public class TiVoHandler extends BaseThingHandler {
 
         Configuration conf = this.getConfig();
         TivoConfigData tivoConfig = new TivoConfigData();
-        // tivoConfig.setCfgHost(String.valueOf(conf.get(CONFIG_ADDRESS)));
-        // tivoConfig.setCfgTcpPort(Integer.parseInt(String.valueOf(conf.get(CONFIG_PORT))));
-        // tivoConfig.setCfgNumConnRetry(Integer.parseInt(String.valueOf(conf.get(CONFIG_CONNECTION_RETRY))));
-        // tivoConfig.setCfgPollInterval(Integer.parseInt(String.valueOf(conf.get(CONFIG_POLL_INTERVAL))));
-        // tivoConfig.setCfgPollChanges(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_POLL_FOR_CHANGES))));
-        // tivoConfig.setCfgKeepConnOpen(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_KEEP_CONNECTION_OPEN))));
-        // tivoConfig.setCfgCmdWait(Integer.parseInt(String.valueOf(conf.get(CONFIG_CMD_WAIT_INTERVAL))));
-        // tivoConfig.setCfgMinChannel(Integer.parseInt(String.valueOf(conf.get(CONFIG_CH_START))));
-        // tivoConfig.setCfgMaxChannel(Integer.parseInt(String.valueOf(conf.get(CONFIG_CH_END))));
-        // tivoConfig.setCfgIgnoreChannelScan(Boolean.parseBoolean(String.valueOf(conf.get(CONFIG_IGNORE_SCAN))));
-        // tivoConfig.setCfgIdentifier(String.valueOf(getThing().getUID()));
-        // tivoConfig.setCfgIgnoreChannels(chParseIgnored(String.valueOf(conf.get(CONFIG_IGNORE_CHANNELS)),
-        // tivoConfig.getCfgMinChannel(), tivoConfig.getCfgMaxChannel()));
 
         Object value;
         value = conf.get(CONFIG_ADDRESS);

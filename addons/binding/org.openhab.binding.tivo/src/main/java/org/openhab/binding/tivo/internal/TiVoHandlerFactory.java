@@ -30,25 +30,13 @@ import org.slf4j.LoggerFactory;
  * handlers.
  *
  * @author Jayson Kubilis - Initial contribution
- * @author Andrew Black - minor updates
+ * @author Andrew Black - minor updates, removal of unused DiscoveryService functionality.
  */
 
 public class TiVoHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(TiVoHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TIVO);
-
-    // private DiscoveryServiceRegistry discoveryServiceRegistry;
-    //
-    // protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-    // logger.debug("TiVo handler - setDiscoveryServiceRegistry was called");
-    // this.discoveryServiceRegistry = discoveryServiceRegistry;
-    // }
-    //
-    // protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-    // logger.debug("TiVo handler - unsetDiscoveryServiceRegistry was called");
-    // this.discoveryServiceRegistry = null;
-    // }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -91,7 +91,7 @@ public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     /**
-     * Gets the UID name.
+     * Gets the UID name, replacing any non AlphaNumeric characters with underscores.
      *
      * @param service the service
      * @return the UID name
