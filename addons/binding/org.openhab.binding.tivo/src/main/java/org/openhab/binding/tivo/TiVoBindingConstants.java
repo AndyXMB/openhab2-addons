@@ -10,12 +10,11 @@ package org.openhab.binding.tivo;
 
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
-// TODO: Auto-generated Javadoc
 /**
  * The {@link TiVoBinding} class defines common constants that are
  * used across the whole binding.
  *
- * @author Jayson Kubilis - Initial contribution
+ * @author Jayson Kubilis (DigitalBytes) - Initial contribution
  * @author Andrew Black (AndyXMB) - Addition of Min / Max Channel and channel scanning properties
  */
 
@@ -25,30 +24,29 @@ public class TiVoBindingConstants {
     public static final int CONFIG_SOCKET_TIMEOUT = 1000;
 
     // List of all Thing Type UIDs
-    public final static ThingTypeUID THING_TYPE_TIVO = new ThingTypeUID(BINDING_ID, "sckt");
+    public static final ThingTypeUID THING_TYPE_TIVO = new ThingTypeUID(BINDING_ID, "sckt");
 
     // List of all Channel ids
-    public final static String CHANNEL_TIVO_CHANNEL_FORCE = "tivoChannelForce";
-    public final static String CHANNEL_TIVO_CHANNEL_SET = "tivoChannelSet";
-    public final static String CHANNEL_TIVO_TELEPORT = "tivoTeleport";
-    public final static String CHANNEL_TIVO_IRCMD = "tivoIRCommand";
-    public final static String CHANNEL_TIVO_KBDCMD = "tivoKBDCommand";
-    public final static String CHANNEL_TIVO_COMMAND = "tivoCommand";
-    public final static String CHANNEL_TIVO_STATUS = "tivoStatus";
+    public static final String CHANNEL_TIVO_CHANNEL_FORCE = "channelForce";
+    public static final String CHANNEL_TIVO_CHANNEL_SET = "channelSet";
+    public static final String CHANNEL_TIVO_TELEPORT = "menuTeleport";
+    public static final String CHANNEL_TIVO_IRCMD = "irCommand";
+    public static final String CHANNEL_TIVO_KBDCMD = "kbdCommand";
+    public static final String CHANNEL_TIVO_STATUS = "dvrStatus";
+    public static final String CHANNEL_TIVO_COMMAND = "customCmd";
 
     // List of all configuration Properties
-    public final static String CONFIG_NAME = "deviceName";
-    public final static String CONFIG_ADDRESS = "address";
-    public final static String CONFIG_PORT = "tcpPort";
-    public final static String CONFIG_CONNECTION_RETRY = "numRetry";
-    public final static String CONFIG_KEEP_CONNECTION_OPEN = "keepConActive";
-    public final static String CONFIG_POLL_FOR_CHANGES = "pollForChanges";
-    public final static String CONFIG_POLL_INTERVAL = "pollInterval";
-    public final static String CONFIG_CMD_WAIT_INTERVAL = "cmdWaitInterval";
-    public final static String CONFIG_IGNORE_CHANNELS = "ignoreChannels";
-
-    public final static String CONFIG_CH_START = "minChannel";
-    public final static String CONFIG_CH_END = "maxChannel";
-    public final static String CONFIG_IGNORE_SCAN = "ignoreChannelScan";
+    public static final String CONFIG_NAME = "deviceName";
+    public static final String CONFIG_ADDRESS = "address";
+    public static final String CONFIG_PORT = "tcpPort";
+    public static final String CONFIG_CONNECTION_RETRY = "numRetry";
+    public static final String CONFIG_KEEP_CONNECTION_OPEN = "keepConActive";
+    public static final String CONFIG_POLL_FOR_CHANGES = "pollForChanges";
+    public static final String CONFIG_POLL_INTERVAL = "pollInterval";
+    public static final String CONFIG_CMD_WAIT_INTERVAL = "cmdWaitInterval";
+    public static final String CONFIG_IGNORE_CHANNELS = "ignoreChannels";
+    public static final String CONFIG_CH_START = "minChannel";
+    public static final String CONFIG_CH_END = "maxChannel";
+    public static final String CONFIG_IGNORE_SCAN = "ignoreChannelScan";
 
 }

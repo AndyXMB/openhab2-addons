@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
  * The {@link TiVoHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Jayson Kubilis - Initial contribution
- * @author Andrew Black - minor updates, removal of unused DiscoveryService functionality.
+ * @author Jayson Kubilis (DigitalBytes) - Initial contribution
+ * @author Andrew Black (AndyXMB) - minor updates, removal of unused DiscoveryService functionality.
  */
 
 public class TiVoHandlerFactory extends BaseThingHandlerFactory {

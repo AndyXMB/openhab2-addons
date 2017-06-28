@@ -27,6 +27,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Class TiVoDiscoveryParticipant.
+ * *
+ * 
+ * @author Jayson Kubilis (DigitalBytes) - Initial contribution
+ * @author Andrew Black (AndyXMB) - minor updates.
  */
 public class TiVoDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private Logger logger = LoggerFactory.getLogger(TiVoDiscoveryParticipant.class);

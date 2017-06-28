@@ -21,9 +21,9 @@ import java.util.Date;
  * @param pubToUI boolean true = this status needs to be published to the UI / Thing, false = do not publish (or it
  *            already has been)
  * @param chScan boolean true = channel scan is in progress, suspend polling actions
- * @param connOK int -1= test not run/default, 0 = offline, 1 = both connection tests failed, 2 = TiVo is in standby
- *            (write test only passed), 3 = Online, both connection tests passed
- *
+ * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, TESTFAIL = both connection tests
+ *            failed, STANDBY = TiVo is in standby (write test only passed), ONLINE = Online, both connection tests
+ *            passed
  */
 
 public class TivoStatusData {
@@ -33,15 +33,24 @@ public class TivoStatusData {
     private String msg = "NO STATUS QUERIED YET";
     private boolean pubToUI = true;
     private boolean chScan = false;
-    private int connOK = -1;
+    private ConnectionStatus connectionStatus = ConnectionStatus.UNKNOWN;
 
-    public TivoStatusData(boolean cmdOk, int channelNum, String msg, boolean pubToUI, int connOK) {
+    public enum ConnectionStatus {
+        UNKNOWN,
+        OFFLINE,
+        TESTFAIL,
+        STANDBY,
+        ONLINE;
+    }
+
+    public TivoStatusData(boolean cmdOk, int channelNum, String msg, boolean pubToUI,
+            ConnectionStatus connectionStatus) {
         this.cmdOk = cmdOk;
         this.time = new Date();
         this.channelNum = channelNum;
         this.msg = msg;
         this.pubToUI = pubToUI;
-        this.connOK = connOK;
+        this.connectionStatus = connectionStatus;
     }
 
     public TivoStatusData(boolean cmdOk, int channelNum, String msg, boolean pubToUI) {
@@ -63,13 +72,14 @@ public class TivoStatusData {
      * @param pubToUI boolean true = this status needs to be published to the UI / Thing, false = do not publish (or it
      *            already has been)
      * @param chScan boolean true = channel scan is in progress, suspend polling actions
-     * @param connOK int -1= test not run/default, 0 = offline, 1 = both connection tests failed, 2 = TiVo is in standby
-     *            (write test only passed), 3 = Online, both connection tests passed
+     * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, TESTFAIL = both connection tests
+     *            failed, STANDBY = TiVo is in standby (write test only passed), ONLINE = Online, both connection tests
+     *            passed
      */
     @Override
     public String toString() {
         return "TivoStatusData [cmdOk=" + cmdOk + ", time=" + time + ", channelNum=" + channelNum + ", msg=" + msg
-                + ", pubToUI=" + pubToUI + ", chScan=" + chScan + ", connOK=" + connOK + "]";
+                + ", pubToUI=" + pubToUI + ", chScan=" + chScan + ", connectionStatus=" + connectionStatus + "]";
     }
 
     /**
@@ -171,7 +181,7 @@ public class TivoStatusData {
     }
 
     /**
-     * {@link getchScan} get status indicating that a Channel Scan is in progress. Used to prevent any user inputs
+     * {@link getChScan} get status indicating that a Channel Scan is in progress. Used to prevent any user inputs
      * breaking this process.
      * = do not publish (or it
      * already has been).
@@ -186,22 +196,24 @@ public class TivoStatusData {
      * {@link setConnOK} indicates the state of the connection / connection tests. Drives online/offline state of the
      * Thing and connection process.
      *
-     * @param connOK int -1= defaut/not set, 0 = offline, 1 = both connection tests failed, 2 = TiVo is in standby
-     *            (write test only passed), 3 = Online, both connection tests passed
+     * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, TESTFAIL = both connection tests
+     *            failed, STANDBY = TiVo is in standby (write test only passed), ONLINE = Online, both connection tests
+     *            passed
      */
-    public void setConnOK(int connOK) {
-        this.connOK = connOK;
+    public void setConnectionStatus(ConnectionStatus connectionStatus) {
+        this.connectionStatus = connectionStatus;
     }
 
     /**
      * {@link getConnOK} returns the state of the connection / connection tests. Drives online/offline state of the
      * Thing and connection process.
      *
-     * @return int -1= defaut/not set, 0 = offline, 1 = both connection tests failed, 2 = TiVo is in standby
-     *         (write test only passed), 3 = Online, both connection tests passed
+     * @return ConnectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, TESTFAIL = both connection tests
+     *         failed, STANDBY = TiVo is in standby (write test only passed), ONLINE = Online, both connection tests
+     *         passed
      */
-    public int getConnOK() {
-        return connOK;
+    public ConnectionStatus getConnOK() {
+        return connectionStatus;
     }
 
 }

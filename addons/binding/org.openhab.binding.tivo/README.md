@@ -40,13 +40,13 @@ All devices support the following channels (non exhaustive):
 
 | Channel Type ID | Item Type    | Display Name | Description  |
 |-----------------|--------------|--------------|------------- |
-| tivoChannelForce | Number (1-9999)| Current Channel - Forced (FORCECH) | Displays the current channel number. When changed, tunes the DVR to the specified channel, **cancelling any recordings in progress if necessary** i.e. when all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work. |
-| tivoChannelSet | Number (1-9999)| Current Channel - Request (SETCH) | Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. |
-| tivoTeleport | String | Change Special/Menu Screen (TELEPORT) |Change to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My Shows). |
-| tivoIRCommand | String | Remote Control Button (IRCOMMAND) | Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes. |
-| tivoKBDCommand | String | Keyboard Command (KEYBOARD) | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes. |
-| tivoStatus | String | TiVo Status | Action return code / channel information returned by the TiVo.  |
-| tivoCommand | String | Custom Command | Send any custom commands that are not documented within the official specification. Both the command and action string must be supplied. **Note: support is not provided for undocumented commands!**   |
+| channelForce | Number (1-9999)| Current Channel - Forced (FORCECH) | Displays the current channel number. When changed, tunes the DVR to the specified channel, **cancelling any recordings in progress if necessary** i.e. when all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work. |
+| channelSet | Number (1-9999)| Current Channel - Request (SETCH) | Displays the current channel number. When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work. |
+| menuTeleport | String | Change Special/Menu Screen (TELEPORT) |Change to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My Shows). |
+| irCommand | String | Remote Control Button (IRCOMMAND) | Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes. |
+| kbdCommand | String | Keyboard Command (KEYBOARD) | Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes. |
+| dvrStatus | String | TiVo Status | Action return code / channel information returned by the TiVo.  |
+| customCmd | String | Custom Command | Send any custom commands that are not documented within the official specification. Both the command and action string must be supplied. **Note: support is not provided for undocumented commands!**   |
 
 * Commands to each of the channels (except 'Custom Command') do not need to include the command keyword only the action/parameter.  For example, to change channel simply post/send the number of the channel **without** the keywords SETCH or  FORCECH.
 * Custom Command is provided to allow the testing of any commands not documented within the official documentation.  In this instance the COMMAND and any parameters must be sent as a single string.
@@ -100,12 +100,11 @@ The following notes may help to understand the correct configuration properties 
 
 ```
 /* TIVO */
-String      TiVo_Status         "Status"        {channel="tivo:sckt:Living_Room:tivoStatus"}
-String      TiVo_MenuScreen     "Menu Screens"  {channel="tivo:sckt:Living_Room:tivoTeleport", autoupdate="false"}
-Number      TiVo_SetPoint       "Up/Down"       {channel="tivo:sckt:Living_Room:tivoChannelSet"}
+String      TiVo_Status         "Status"        {channel="tivo:sckt:Living_Room:menuTeleport", autoupdate="false"}
+Number      TiVo_SetPoint       "Up/Down"       {channel="tivo:sckt:Living_Room:channelSet"}
 String      TiVo_SetPointName   "Channel Name"                                                           
-String      TiVo_IRCmd          "Ir Cmd"        {channel="tivo:sckt:Living_Room:tivoIRCommand", autoupdate="false"}
-String      TiVo_KbdCmd         "Keyboard Cmd"  {channel="tivo:sckt:Living_Room:tivoKBDCommand", autoupdate="false"}
+String      TiVo_IRCmd          "Ir Cmd"        {channel="tivo:sckt:Living_Room:irCommand", autoupdate="false"}
+String      TiVo_KbdCmd         "Keyboard Cmd"  {channel="tivo:sckt:Living_Room:kbdCommand", autoupdate="false"}
 String      TiVo_KeyboardStr    "Search String"
 Switch      TiVo_Search
 ```
