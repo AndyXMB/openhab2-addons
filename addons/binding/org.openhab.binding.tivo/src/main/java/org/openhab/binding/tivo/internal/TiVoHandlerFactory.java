@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 
 public class TiVoHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(TiVoHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(TiVoHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_TIVO);
 

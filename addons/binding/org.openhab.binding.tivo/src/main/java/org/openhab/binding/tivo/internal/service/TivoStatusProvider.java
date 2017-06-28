@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.openhab.binding.tivo.handler.TiVoHandler;
+import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ public class TivoStatusProvider {
      */
 
     public TivoStatusProvider(TivoConfigData tivoConfigData, TiVoHandler tivoHandler, Boolean pausePolling) {
-        this.tivoStatusData = new TivoStatusData(false, -1, "INITIALISING", false);
+        this.tivoStatusData = new TivoStatusData(false, -1, "INITIALISING", false, ConnectionStatus.UNKNOWN);
         this.tivoConfigData = tivoConfigData;
         this.tivoHandler = tivoHandler;
         this.pausePolling = pausePolling;
@@ -171,7 +172,7 @@ public class TivoStatusProvider {
 
         if (!connTestSocket()) {
             logger.error(" TiVo '{}' - called setTivoStatus but not connected!", tivoConfigData.getCfgIdentifier());
-            return new TivoStatusData(false, -1, "NOT_CONNECTED", false, 0);
+            return new TivoStatusData(false, -1, "NOT_CONNECTED", false, ConnectionStatus.OFFLINE);
         }
 
         try {
@@ -193,7 +194,8 @@ public class TivoStatusProvider {
 
                     if (retryCount <= 0) {
                         // We have failed at life... Give up.
-                        return new TivoStatusData(false, -1, "CONNECTION_RETRIES_EXHAUSTED", false, 0);
+                        return new TivoStatusData(false, -1, "CONNECTION_RETRIES_EXHAUSTED", false,
+                                ConnectionStatus.OFFLINE);
 
                     } else {
                         doNappTime();
@@ -230,7 +232,8 @@ public class TivoStatusProvider {
             oC = connTivoConnectRetry(true);
         }
 
-        if (tivoStatusData.getConnOK() > 1) {
+        if (tivoStatusData.getConnectionStatus() != ConnectionStatus.UNKNOWN
+                && tivoStatusData.getConnectionStatus() != ConnectionStatus.OFFLINE) {
             rtnVal = statusGetRetry(retryCount);
         }
 
@@ -266,7 +269,7 @@ public class TivoStatusProvider {
         // If were not connected we can't provide a status
         if (!connTestSocket()) {
             logger.error(" TiVo '{}' - called statusGetRetry but not connected!", tivoConfigData.getCfgIdentifier());
-            return new TivoStatusData(false, -1, "NOT_CONNECTED", false, 0);
+            return new TivoStatusData(false, -1, "NOT_CONNECTED", false, ConnectionStatus.OFFLINE);
         }
 
         try {
@@ -296,7 +299,8 @@ public class TivoStatusProvider {
                 if (retryCount <= 0) {
                     // We have failed at life... Give up.
                     tivoStatus = "";
-                    return new TivoStatusData(false, -1, "CONNECTION_RETRIES_EXHAUSTED", false, 0);
+                    return new TivoStatusData(false, -1, "CONNECTION_RETRIES_EXHAUSTED", false,
+                            ConnectionStatus.OFFLINE);
                 } else {
                     doNappTime();
                     return statusGetRetry(retryCount - 1);
@@ -325,7 +329,8 @@ public class TivoStatusProvider {
         boolean pubMsg = true;
 
         if (strTivoStatus == null) {
-            return new TivoStatusData(false, -1, "NO_STATUS_DATA_RETURNED", false);
+            return new TivoStatusData(false, -1, "NO_STATUS_DATA_RETURNED", false,
+                    tivoStatusData.getConnectionStatus());
         } else {
             // Determine if this is a repeat of an existing status msg
             logger.debug(" statusParse '{}' - current status '{}'", tivoConfigData.getCfgIdentifier(),
@@ -337,26 +342,31 @@ public class TivoStatusProvider {
                 // COMMAND_TIMEOUT (more accurately waiting for next command) status is dropped earlier in the process
                 // and returns ""
                 case "":
-                    return new TivoStatusData(false, -1, "NO_STATUS_DATA_RETURNED", false, tivoStatusData.getConnOK());
+                    return new TivoStatusData(false, -1, "NO_STATUS_DATA_RETURNED", false,
+                            tivoStatusData.getConnectionStatus());
                 case "CH_FAILED NO_LIVE":
-                    return new TivoStatusData(false, -1, "CH_FAILED NO_LIVE", pubMsg, tivoStatusData.getConnOK());
+                    return new TivoStatusData(false, -1, "CH_FAILED NO_LIVE", pubMsg,
+                            tivoStatusData.getConnectionStatus());
                 case "CH_FAILED RECORDING":
-                    return new TivoStatusData(false, -1, "CH_FAILED RECORDING", pubMsg, tivoStatusData.getConnOK());
+                    return new TivoStatusData(false, -1, "CH_FAILED RECORDING", pubMsg,
+                            tivoStatusData.getConnectionStatus());
                 case "CH_FAILED MISSING_CHANNEL":
                     return new TivoStatusData(false, -1, "CH_FAILED MISSING_CHANNEL", pubMsg,
-                            tivoStatusData.getConnOK());
+                            tivoStatusData.getConnectionStatus());
                 case "CH_FAILED MALFORMED_CHANNEL":
-                    return new TivoStatusData(false, -1, "CH_FAILED NO_LIVE", pubMsg, tivoStatusData.getConnOK());
+                    return new TivoStatusData(false, -1, "CH_FAILED NO_LIVE", pubMsg,
+                            tivoStatusData.getConnectionStatus());
                 case "CH_FAILED INVALID_CHANNEL":
                     return new TivoStatusData(false, -1, "CH_FAILED INVALID_CHANNEL", pubMsg,
-                            tivoStatusData.getConnOK());
+                            tivoStatusData.getConnectionStatus());
                 case "LIVETV_READY":
-                    return new TivoStatusData(true, -1, "LIVETV_READY", pubMsg, tivoStatusData.getConnOK());
+                    return new TivoStatusData(true, -1, "LIVETV_READY", pubMsg, tivoStatusData.getConnectionStatus());
                 case "INVALID_COMMAND":
-                    return new TivoStatusData(false, -1, "INVALID_COMMAND", false, tivoStatusData.getConnOK());
+                    return new TivoStatusData(false, -1, "INVALID_COMMAND", false,
+                            tivoStatusData.getConnectionStatus());
                 case "CONNECTION_RETRIES_EXHAUSTED":
                     return new TivoStatusData(false, -1, "CONNECTION_RETRIES_EXHAUSTED", pubMsg,
-                            tivoStatusData.getConnOK());
+                            tivoStatusData.getConnectionStatus());
 
             }
         }
@@ -375,16 +385,16 @@ public class TivoStatusProvider {
                 chNum = new Integer(Integer.parseInt(matcher.group(1).trim()));
             }
             logger.debug(" statusParse '{}' - parsed channel '{}'", tivoConfigData.getCfgIdentifier(), chNum);
-            if (tivoStatusData.getConnOK() != 3) {
+            if (tivoStatusData.getConnectionStatus() != ConnectionStatus.ONLINE) {
                 logger.debug(" connTivoConnectRetry '{}' - read test suceeded, we are ONLINE.",
                         tivoConfigData.getCfgIdentifier());
                 tivoHandler.setTivoStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
             }
-            return new TivoStatusData(true, chNum, strTivoStatus, pubMsg, 3);
+            return new TivoStatusData(true, chNum, strTivoStatus, pubMsg, ConnectionStatus.ONLINE);
         }
         logger.warn(" TiVo '{}' - Unhandled / unexpected status message recieved: '{}'",
                 tivoConfigData.getCfgIdentifier(), strTivoStatus);
-        return new TivoStatusData(false, -1, strTivoStatus, false, tivoStatusData.getConnOK());
+        return new TivoStatusData(false, -1, strTivoStatus, false, tivoStatusData.getConnectionStatus());
     }
 
     /**
@@ -430,7 +440,7 @@ public class TivoStatusProvider {
     public boolean connTivoConnectRetry(boolean pConnect) {
 
         if (tivoStatusData == null) {
-            tivoStatusData = new TivoStatusData(false, -1, "NOT INITIALISED", false, -1);
+            tivoStatusData = new TivoStatusData(false, -1, "NOT INITIALISED", false, ConnectionStatus.UNKNOWN);
         }
 
         if (pConnect == false) {
@@ -444,7 +454,7 @@ public class TivoStatusProvider {
                 logger.debug(" connTivoConnectRetry '{}' - starting connection process '{}' of '{}'.",
                         tivoConfigData.getCfgIdentifier(), iL, tivoConfigData.getCfgNumConnRetry());
 
-                if (tivoStatusData.getConnOK() < 2) {
+                if (tivoStatusData.getConnectionStatus() != ConnectionStatus.ONLINE) {
                     connTivoSocket(false);
                     logger.debug(" connTivoConnectRetry '{}' - Socket dissconnected, to allow re-test. ",
                             tivoConfigData.getCfgIdentifier());
@@ -456,38 +466,38 @@ public class TivoStatusProvider {
                         logger.debug(" connTivoConnectRetry '{}' - Socket created / connection made.",
                                 tivoConfigData.getCfgIdentifier());
 
-                        int connState = connTestCmds();
+                        ConnectionStatus connState = connTestCmds();
 
-                        if (connState == 3) {
-                            if (tivoStatusData.getConnOK() != 3) {
-                                tivoHandler.setTivoStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
-                                tivoStatusData.setConnOK(3);
-                            }
+                        if (connState == ConnectionStatus.ONLINE
+                                && tivoStatusData.getConnectionStatus() != ConnectionStatus.ONLINE) {
+                            tivoHandler.setTivoStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+                            tivoStatusData.setConnectionStatus(ConnectionStatus.ONLINE);
+
                             logger.debug(" connTivoConnectRetry '{}' - read test suceeded, we are ONLINE.",
                                     tivoConfigData.getCfgIdentifier());
                             return true;
-                        } else if (connState == 2) {
-                            if (tivoStatusData.getConnOK() != 2) {
-                                tivoHandler.setTivoStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                                        "STANDBY MODE - use 'IRCODE TIVO' to wake up.");
-                                tivoStatusData.setConnOK(2);
-                            }
+                        } else if (connState == ConnectionStatus.STANDBY
+                                && tivoStatusData.getConnectionStatus() != ConnectionStatus.STANDBY) {
+                            tivoHandler.setTivoStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                    "STANDBY MODE - use 'IRCODE TIVO' to wake up.");
+                            tivoStatusData.setConnectionStatus(ConnectionStatus.STANDBY);
                             logger.debug(
                                     "connTivoConnectRetry '{}' - only write test command suceeded, we are ONLINE (STANDBY).",
                                     tivoConfigData.getCfgIdentifier());
                             return true;
-                        } else if (connState == 1 & tivoStatusData.getConnOK() != 1) {
+                        } else if (connState == ConnectionStatus.OFFLINE
+                                && tivoStatusData.getConnectionStatus() != ConnectionStatus.OFFLINE) {
                             connTivoSocket(false);
-                            tivoStatusData.setConnOK(1);
+                            tivoStatusData.setConnectionStatus(ConnectionStatus.OFFLINE);
                             logger.debug(" connTivoConnectRetry '{}' - both test commands failed, we are OFFLINE.",
                                     tivoConfigData.getCfgIdentifier());
                         }
                     } else {
                         // Socket creation failed...
-                        if (tivoStatusData.getConnOK() != 0) {
+                        if (tivoStatusData.getConnectionStatus() != ConnectionStatus.UNKNOWN) {
                             tivoHandler.setTivoStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "Unable to connect or port already in-use");
-                            tivoStatusData.setConnOK(0);
+                            tivoStatusData.setConnectionStatus(ConnectionStatus.UNKNOWN);
                             logger.warn(" connTivoConnectRetry '{}' - Socket creation failed.",
                                     tivoConfigData.getCfgIdentifier());
                         }
@@ -495,8 +505,8 @@ public class TivoStatusProvider {
 
                     if (iL == tivoConfigData.getCfgNumConnRetry()) {
                         // Set offline if all retries failed to connect
-                        if (tivoStatusData.getConnOK() != 0) {
-                            tivoStatusData.setConnOK(0);
+                        if (tivoStatusData.getConnectionStatus() != ConnectionStatus.OFFLINE) {
+                            tivoStatusData.setConnectionStatus(ConnectionStatus.OFFLINE);
                             tivoHandler.setTivoStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "Connection tests (read and write) failed " + tivoConfigData.getCfgNumConnRetry()
                                             + " times");
@@ -513,7 +523,7 @@ public class TivoStatusProvider {
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -573,7 +583,7 @@ public class TivoStatusProvider {
                 logger.error(" TiVo '{}' - while connecting, unexpected host error: '{}'",
                         tivoConfigData.getCfgIdentifier(), e.getMessage());
             } catch (IOException e) {
-                if (tivoStatusData.getConnOK() != 0) {
+                if (tivoStatusData.getConnectionStatus() != ConnectionStatus.OFFLINE) {
                     logger.error(" TiVo '{}' - I/O exception while connecting: '{}'", tivoConfigData.getCfgIdentifier(),
                             e.getMessage());
                 }
@@ -592,7 +602,7 @@ public class TivoStatusProvider {
      *         in-use)
      */
 
-    private int connTestCmds() {
+    private ConnectionStatus connTestCmds() {
 
         boolean getOk = false;
         boolean sendOk = false;
@@ -604,7 +614,7 @@ public class TivoStatusProvider {
             logger.debug(" connTestCmds '{}' - testing read of initial channel state FAILED",
                     tivoConfigData.getCfgIdentifier());
         } else {
-            return 3;
+            return ConnectionStatus.OFFLINE;
         }
 
         logger.debug(" connTestCmds '{}' - testing dummy write command 'DUMMY_CMD'.",
@@ -629,11 +639,11 @@ public class TivoStatusProvider {
         }
 
         if (!getOk & sendOk) {
-            return 2;
+            return ConnectionStatus.ONLINE;
         } else if (!getOk & !sendOk) {
-            return 1;
+            return ConnectionStatus.TESTFAIL;
         }
-        return 0;
+        return ConnectionStatus.UNKNOWN;
     }
 
     /**

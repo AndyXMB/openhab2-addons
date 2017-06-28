@@ -12,13 +12,13 @@
 control of channel changes, user interface navigation and allow the client to send simulated remote control button presses to the Digital Video Recorder.<![CDATA[ <br /><br /> ]]>See https://www.tivo.com/assets/images/abouttivo/resources/downloads/brochures/TiVo_TCP_Network_Remote_Control_Protocol.pdf for supported commands / codes for each channel.</description>
 
         <channels>
-            <channel id="tivoChannelForce" typeId="tivoChannelForce"/>
-            <channel id="tivoChannelSet" typeId="tivoChannelSet"/>
-            <channel id="tivoTeleport" typeId="tivoTeleport"/>
-            <channel id="tivoIRCommand" typeId="tivoIRCommand"/>
-            <channel id="tivoKBDCommand" typeId="tivoKBDCommand"/>
-            <channel id="tivoStatus" typeId="tivoStatus"/>
-            <channel id="tivoCommand" typeId="tivoCommand"/>
+            <channel id="channelForce" typeId="channelForce"/>
+            <channel id="channelSet" typeId="channelSet"/>
+            <channel id="menuTeleport" typeId="menuTeleport"/>
+            <channel id="irCommand" typeId="irCommand"/>
+            <channel id="kbdCommand" typeId="kbdCommand"/>
+            <channel id="dvrStatus" typeId="dvrStatus"/>
+            <channel id="customCmd" typeId="customCmd"/>
         </channels>
         
         <config-description>
@@ -33,12 +33,12 @@ control of channel changes, user interface navigation and allow the client to se
             	<required>true</required>
             	<label>Address</label>
             	<description>The IP address or host name of your TiVo box</description>
+            	<context>network-address</context>
         	</parameter>
         	<parameter name="tcpPort" type="integer" max="65535" min="1">
 				<default>31339</default>
 				<required>true</required>
 				<label>TCP Port</label>
-				<context>network-address</context>
 				<description>The TCP port number used to connect to the TiVo.<![CDATA[ <b> ]]>Default: 31339<![CDATA[ </b> ]]></description>
 			</parameter>
 			<parameter name="numRetry" type="integer" max="20" min="0">
@@ -98,21 +98,21 @@ control of channel changes, user interface navigation and allow the client to se
         </config-description>
     </thing-type>
 
-    <channel-type id="tivoChannelForce">
+    <channel-type id="channelForce">
         <item-type>Number</item-type>
         <label>Current Channel - Forced (FORCECH)</label>
         <description>Displays the current channel number.  When changed, tunes the DVR to the specified channel, cancelling any recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work.  Type: Number (1-9999), DisplayFormat: %n</description>
         <category>ChannelChange</category>
         <state min="1" max="9999" step="1" pattern="%n" ></state>
     </channel-type>
-    <channel-type id="tivoChannelSet">
+    <channel-type id="channelSet">
         <item-type>Number</item-type>
         <label>Current Channel - Request (SETCH)</label>
         <description>Displays the current channel number.  When changed, tunes the DVR to the specified channel (unless a recording is in progress on all available tuners). The TiVo must be in Live TV mode for this command to work.   Type: Number (1-9999), DisplayFormat: %n</description>
         <category>ChannelChange</category>
         <state min="1" max="9999" step="1" pattern="%n" />
     </channel-type>
-    <channel-type id="tivoTeleport">
+    <channel-type id="menuTeleport">
         <item-type>String</item-type>
         <label>Change Special/Menu Screen (TELEPORT)</label>
         <description>Change to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My Shows).  Type: String</description>
@@ -125,25 +125,25 @@ control of channel changes, user interface navigation and allow the client to se
             </options>        
         </state>
     </channel-type>
-    <channel-type id="tivoIRCommand">
+    <channel-type id="irCommand">
         <item-type>String</item-type>
         <label>Remote Control Button (IRCODE)</label>
         <description>Send a simulated button push from the remote control to the TiVo. See Appendix A in document TCP Remote Protocol 1.1 for supported codes.   Type: String</description>
         <state readOnly="false"/>
     </channel-type>
-    <channel-type id="tivoKBDCommand">
+    <channel-type id="kbdCommand">
         <item-type>String</item-type>
         <label>Keyboard Command (KEYBOARD)</label>
         <description>Sends a code corresponding to a keyboard key press to the TiVo e.g. A-Z.  See Appendix A in document TCP Remote Protocol 1.1 for supported characters and special character codes.  Type: String</description>
         <state readOnly="false"/>
     </channel-type>
-    <channel-type id="tivoStatus">
+    <channel-type id="dvrStatus">
         <item-type>String</item-type>
         <label>TiVo Status</label>
         <description>Action return code / channel information returned by the TiVo.  Type: String</description>
         <state readOnly="true" pattern="%s" />
     </channel-type>
-        <channel-type id="tivoCommand">
+        <channel-type id="customCmd">
         <item-type>String</item-type>
         <label>Custom Command</label>
         <description>Send custom commands.  Both the command and action strings must be supplied.  Note: support is only provided for documented commands / responses. <![CDATA[ </b> ]]> Type: String</description>
