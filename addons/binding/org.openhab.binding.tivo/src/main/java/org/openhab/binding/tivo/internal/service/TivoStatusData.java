@@ -10,6 +10,7 @@
 package org.openhab.binding.tivo.internal.service;
 
 import java.util.Date;
+import java.util.Observable;
 
 /**
  * {@link TivoStatusData} class stores the data from the last status query from the TiVo and any other errors / status
@@ -20,14 +21,16 @@ import java.util.Date;
  * @param msg string status message from the TiVo socket
  * @param pubToUI boolean true = this status needs to be published to the UI / Thing, false = do not publish (or it
  *            already has been)
- * @param chScan boolean true = channel scan is in progrefailed, STANDBY(3) = TiVo is in standby (write test only
- *            passed), ONLINE(4) = Online, both connection tests passed
+ * @param chScan boolean true = channel scan is in progress
+ * @param connectionStatus ConnectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is in
+ *            standby,
+ *            ONLINE = Online
  *
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
- * @author Andrew Black (AndyXMB) - minor updates, removal of unused DiscoveryService functionality.
+ * @author Andrew Black (AndyXMB) - minor updates, removal of unused functions.
  */
 
-public class TivoStatusData {
+public class TivoStatusData extends Observable {
     private boolean cmdOk = false;
     private Date time = new Date();
     private int channelNum = -1;
@@ -44,30 +47,28 @@ public class TivoStatusData {
         this.msg = msg;
         this.pubToUI = pubToUI;
         this.connectionStatus = connectionStatus;
+
     }
 
     public enum ConnectionStatus {
         UNKNOWN,
         OFFLINE,
-        TESTFAIL,
         STANDBY,
         ONLINE;
     }
 
     /**
      * {@link TivoStatusData} class stores the data from the last status query from the TiVo and any other errors /
-     * status
-     * codes.
+     * status codes.
      *
      * @param cmdOk boolean true = last command executed correctly, false = last command failed with error message
      * @param channelNum int = channel number, -1 indicates no channel received. Valid channel range 1-9999.
      * @param msg string status message from the TiVo socket
-     * @param pubToUI boolean true = this status needs to be published to the UI / Thing, false = do not publish (or it
+     * @param pubToUI boolean true = this status needs to be published to the UI, false = do not publish (or it
      *            already has been)
-     * @param chScan boolean true = channel scan is in progress, suspend polling actions
-     * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, TESTFAIL = both connection tests
-     *            failed, STANDBY = TiVo is in standby (write test only passed), ONLINE = Online, both connection tests
-     *            passed
+     * @param chScan boolean true = channel scan is in progress
+     * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is in standby
+     *            , ONLINE = Online
      */
     @Override
     public String toString() {
@@ -76,7 +77,7 @@ public class TivoStatusData {
     }
 
     /**
-     * Get {@link isCmdOK} indicates if the last command executed correctly.
+     * {@link isCmdOK} indicates if the last command executed correctly.
      *
      * @return cmdOk boolean true = executed correctly, false = last command failed with error message
      */
@@ -91,16 +92,6 @@ public class TivoStatusData {
      */
     public void setCmdOk(boolean cmdOk) {
         this.cmdOk = cmdOk;
-    }
-
-    /**
-     * {@link getTime} returns the date / time of the last status message update
-     *
-     * @return Date
-     * @see Date
-     */
-    public Date getTime() {
-        return time;
     }
 
     /**
@@ -122,27 +113,17 @@ public class TivoStatusData {
     }
 
     /**
-     * {@link getMsg} gets msg string status message from the TiVo socket
+     * {@link getMsg} gets status message string
      *
-     * @return the msg
+     * @return msg string
      */
     public String getMsg() {
         return msg;
     }
 
     /**
-     * {@link setMsg} sets msg string status message from the TiVo socket
-     *
-     * @param msg the new msg
-     */
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    /**
      * {@link setPubToUI} set to true if this status needs to be published to the channel / UI / Thing, false = do not
-     * publish (or it
-     * already has been).
+     * publish (or it already has been).
      *
      * @param pubToUI true = publish status to the channel objects
      */
@@ -152,46 +133,41 @@ public class TivoStatusData {
 
     /**
      * {@link getPubToUI} get status indicating that the event needs to be published to the channel / UI / Thing, false
-     * = do not publish (or it
-     * already has been).
+     * = do not publish (or it already has been).
      *
-     * @param pubToUI true = publish status to the channel objects
+     * @return pubToUI true = publish status to the channel objects
      */
     public boolean getPubToUI() {
         return pubToUI;
     }
 
     /**
-     * {@link setchScan} set to true if a Channel Scan is in progress. Used to prevent any user inputs breaking this
+     * {@link setChScan} set to true if a Channel Scan is in progress. Used to prevent any user inputs breaking this
      * process.
-     * publish (or it
-     * already has been).
      *
-     * @return true = channel scanning is in progress
+     * @param chScan boolean true = channel scanning is in progress, false = normal operation
      */
     public void setChScan(boolean chScan) {
         this.chScan = chScan;
     }
 
     /**
-     * {@link getChScan} get status indicating that a Channel Scan is in progress. Used to prevent any user inputs
-     * breaking this process.
-     * = do not publish (or it
-     * already has been).
+     * {@link isChannelScanInProgress} get status indicating that a Channel Scan is in progress. Used to prevent any
+     * user inputs breaking this process.
      *
-     * @return true = true = channel scanning is in progress, false = normal operation
+     * @return chScan boolean true = channel scanning is in progress, false = normal operation
      */
-    public boolean getChScan() {
+    public boolean isChannelScanInProgress() {
         return chScan;
     }
 
     /**
-     * {@link setConnOK} indicates the state of the connection / connection tests. Drives online/offline state of the
+     * {@link setConnectionStatus} indicates the state of the connection / connection tests. Drives online/offline state
+     * of the
      * Thing and connection process.
      *
-     * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, TESTFAIL = both connection tests
-     *            failed, STANDBY = TiVo is in standby (write test only passed), ONLINE = Online, both connection tests
-     *            passed
+     * @param connectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is in standby,
+     *            ONLINE = Online
      */
     public void setConnectionStatus(ConnectionStatus connectionStatus) {
         this.connectionStatus = connectionStatus;
@@ -202,9 +178,8 @@ public class TivoStatusData {
      * of the
      * Thing and connection process.
      *
-     * @return ConnectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, TESTFAIL = both connection tests
-     *         failed, STANDBY = TiVo is in standby (write test only passed), ONLINE = Online, both connection tests
-     *         passed
+     * @return ConnectionStatus enum UNKNOWN= test not run/default, OFFLINE = offline, STANDBY = TiVo is in standby,
+     *         ONLINE = Online
      */
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;

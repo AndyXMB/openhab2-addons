@@ -104,7 +104,8 @@ public class TivoConfigData {
 
     /**
      * Gets the cfgNumConnRetry value. This determines the number of connection attempts made to the IP/Port of the
-     * service and the number of read attempts that are made when a command is submitted to the device, separated by the
+     * service and the number of read attempts that are made when a command is submitted to the device, separated by
+     * the
      * interval specified in the Command Wait Interval.
      *
      * @return the cfgNumConnRetry
@@ -115,7 +116,8 @@ public class TivoConfigData {
 
     /**
      * Sets the cfgNumConnRetry value. This determines the number of connection attempts made to the IP/Port of the
-     * service and the number of read attempts that are made when a command is submitted to the device, separated by the
+     * service and the number of read attempts that are made when a command is submitted to the device, separated by
+     * the
      * interval specified in the Command Wait Interval.
      *
      * @param cfgNumConnRetry the cfgNumConnRetry to set
@@ -149,7 +151,7 @@ public class TivoConfigData {
      *
      * @return the cfgPollChanges
      */
-    public boolean isCfgPollChanges() {
+    public boolean doPollChanges() {
         return cfgPollChanges;
     }
 
@@ -264,7 +266,7 @@ public class TivoConfigData {
     }
 
     /**
-     * Sets the cfg ignore channel scan.
+     * Sets the value of cfgIgnoreChannelScan.
      *
      * @param cfgIgnoreChannelScan the new cfg ignore channel scan
      */
@@ -273,11 +275,11 @@ public class TivoConfigData {
     }
 
     /**
-     * Gets the cfg ignore channel scan.
+     * {@link doChannelScan} Gets the cfg ignore channel scan.
      *
-     * @return the cfg ignore channel scan
+     * @return boolean value of cfgIgnoreChannelScan.
      */
-    public Boolean getCfgIgnoreChannelScan() {
+    public Boolean doChannelScan() {
         return cfgIgnoreChannelScan;
     }
 
