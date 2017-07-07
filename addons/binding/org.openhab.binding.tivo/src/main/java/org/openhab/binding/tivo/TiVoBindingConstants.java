@@ -47,5 +47,4 @@ public class TiVoBindingConstants {
     public static final String CONFIG_CH_START = "minChannel";
     public static final String CONFIG_CH_END = "maxChannel";
     public static final String CONFIG_IGNORE_SCAN = "ignoreChannelScan";
-
 }
