@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.Configuration;
-//import org.eclipse.smarthome.config.discovery.DiscoveryServiceRegistry;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
