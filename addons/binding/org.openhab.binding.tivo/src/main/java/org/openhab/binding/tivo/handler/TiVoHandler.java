@@ -30,10 +30,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.tivo.internal.service.TivoConfigData;
 import org.openhab.binding.tivo.internal.service.TivoStatusData;
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
 import org.openhab.binding.tivo.internal.service.TivoStatusData.ConnectionStatus;
-=======
->>>>>>> 73f9dc6 Initial Commit
 import org.openhab.binding.tivo.internal.service.TivoStatusProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,29 +39,17 @@ import org.slf4j.LoggerFactory;
  * The {@link TiVoHandler} is the BaseThingHandler responsible for handling commands that are
  * sent to one of the Tivo's channels.
  *
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
  * @author Jayson Kubilis (DigitalBytes) - Initial contribution
-=======
- * @author Jayson Kubilis - Initial contribution
->>>>>>> 73f9dc6 Initial Commit
  * @author Andrew Black (AndyXMB) - Updates / compilation corrections. Addition of channel scanning functionality.
  */
 
 public class TiVoHandler extends BaseThingHandler {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     private final Logger logger = LoggerFactory.getLogger(TiVoHandler.class);
     private TivoConfigData tivoConfigData = null;
     private ConnectionStatus lastConnectionStatus = ConnectionStatus.UNKNOWN;
     private TivoStatusProvider tivoConnection = null;
     private ScheduledFuture<?> refreshJob = null;
     private ScheduledFuture<?> chScanJob = null;
-=======
-    private Logger logger = LoggerFactory.getLogger(TiVoHandler.class);
-    private TivoConfigData tivoCfgData = null;
-    private TivoStatusProvider myTivoService = null;
-    private ScheduledFuture<?> refreshJob;
-    private ScheduledFuture<?> chScanJob;
->>>>>>> 73f9dc6 Initial Commit
 
     /**
      * Instantiates a new TiVo handler.
@@ -80,145 +65,12 @@ public class TiVoHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         // Handles the commands from the various TiVo channel objects
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         logger.debug("handleCommand '{}', parameter: {}", channelUID, command);
-=======
-        logger.debug("handleCommand {}, command: {}", channelUID, command);
->>>>>>> 73f9dc6 Initial Commit
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         if (!isInitialized()) {
             logger.debug("handleCommand '{}' device is not intialised yet, command '{}' will be ignored.",
                     getThing().getUID(), channelUID + " " + command);
             return;
-=======
-        if (command != null && myTivoService != null) {
-
-            TivoStatusData myTivo = myTivoService.getServiceStatus();
-            String tivoCommand = null;
-
-            if (!isInitialized()) {
-                logger.debug("handleCommand '{}' device is not intialised yet, command '{}' will be ignored.",
-                        getThing().getUID(), channelUID + " " + command);
-                return;
-            }
-
-            // Check to see if we are running a channel scan, if so 'disable' UI commands, else chaos ensues...
-            if (myTivo != null && myTivo.getChScan()) {
-                logger.warn("TiVo '{}' channel scan is in progress, command '{}' will be ignored.", getThing().getUID(),
-                        channelUID + " " + command);
-                return;
-            }
-
-            String tmpAct = command.toString().toUpperCase();
-            if (command instanceof RefreshType) {
-
-                switch (channelUID.getId()) {
-
-                    case CHANNEL_TIVO_STATUS:
-                    case CHANNEL_TIVO_CHANNEL_FORCE:
-                    case CHANNEL_TIVO_CHANNEL_SET:
-                        if (myTivo != null && myTivo.isCmdOk()) {
-                            updateTivoStatus(myTivo);
-                        }
-                        break;
-                    default:
-                        // Future enhancement, if we can come up with a sensible set of actions when a REFRESH is issued
-                        logger.info("TiVo '{}' skipping REFRESH command for channel: '{}'.", getThing().getUID(),
-                                channelUID.getId());
-                }
-
-                return;
-            }
-
-            switch (channelUID.getId())
-
-            {
-                case CHANNEL_TIVO_CHANNEL_FORCE:
-                    tivoCommand = "FORCECH";
-                case CHANNEL_TIVO_CHANNEL_SET:
-                    logger.debug("handleCommand '{}' - CHANNEL_TIVO FORCECH or SETCH found!", getThing().getUID());
-
-                    if (tivoCommand == null) {
-                        tivoCommand = "SETCH";
-                    }
-
-                    myTivo = chChannelChange(tivoCommand, tmpAct);
-                    if (myTivo != null && myTivo.isCmdOk()) {
-                        updateTivoStatus(myTivo);
-                    }
-                    break;
-
-                case CHANNEL_TIVO_COMMAND:
-                    logger.debug("handleCommand '{}' - CHANNEL_TIVO COMMAND found!", getThing().getUID());
-
-                    // Attempt to execute the command on the tivo
-                    myTivo = myTivoService.cmdTivoSend(tmpAct);
-
-                    // Check to see if the command was successful
-                    if (myTivo != null && myTivo.isCmdOk()) {
-                        logger.debug("handleCommand '{}' - returned Tivo Data Object: '{}'", getThing().getUID(),
-                                myTivo.toString());
-                        updateTivoStatus(myTivo);
-                    } else {
-                        logger.warn("handleCommand '{}' - command failed '{}'", getThing().getUID(), tmpAct);
-                    }
-                    break;
-
-                case CHANNEL_TIVO_TELEPORT:
-                    tivoCommand = "TELEPORT " + tmpAct;
-
-                    logger.debug("handleCommand '{}' TELEPORT command to tivo: '{}'", getThing().getUID(), tivoCommand);
-
-                    if (myTivoService.getServiceStatus().getConnOK() == 2 & tmpAct.equals("TIVO")) {
-                        tivoCommand = "IRCODE " + tmpAct;
-                        logger.debug("TiVo '{}' TELEPORT re-mapped to IRCODE as we are in standby: '{}'",
-                                getThing().getUID(), tivoCommand);
-                    }
-
-                    // Attempt to execute the command on the TiVo
-                    myTivo = myTivoService.cmdTivoSend(tivoCommand);
-
-                    // Check to see if the command was successful
-                    if (myTivo != null && myTivo.isCmdOk()) {
-                        logger.debug("handleCommand '{}' - returned Tivo Data Object: '{}'", myTivo.toString());
-                        updateTivoStatus(myTivo);
-                    }
-
-                    break;
-
-                case CHANNEL_TIVO_IRCMD:
-                    tivoCommand = "IRCODE";
-                case CHANNEL_TIVO_KBDCMD:
-                    logger.debug("handleCommand '{}' - CHANNEL_TIVO IRCODE/KBDCMD found!", getThing().getUID());
-
-                    if (tivoCommand == null) {
-                        tivoCommand = "KEYBOARD";
-                    }
-
-                    String tmpCommand = tivoCommand + " " + tmpAct;
-
-                    logger.debug("handleCommand '{}' - IR/KBD command to tivo: '{}'", getThing().getUID(), tmpCommand);
-
-                    // Attempt to execute the command on the TiVo
-                    myTivo = myTivoService.cmdTivoSend(tmpCommand);
-
-                    // Handle CHANNELUP and CHANNELDOWN which does not report a status change
-                    if (tmpAct == "CHANNELUP" | tmpAct == "CHANNELDOWN") {
-                        myTivoService.connTivoConnectRetry(false);
-                        myTivoService.connTivoConnectRetry(true);
-                    }
-
-                    // Check to see if the command was successful
-                    if (myTivo != null && myTivo.isCmdOk()) {
-                        logger.debug(" Returned Tivo Data Object: '{}'", myTivo.toString());
-                        updateTivoStatus(myTivo);
-                    }
-
-                    break;
-
-            }
->>>>>>> 73f9dc6 Initial Commit
         }
 
         if (command == null || tivoConnection == null) {
@@ -267,7 +119,6 @@ public class TiVoHandler extends BaseThingHandler {
 
     }
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     private void sendCommand(String commandKeyword, String commandParameters, TivoStatusData currentStatus) {
         TivoStatusData commandResult = null;
         logger.debug("handleCommand '{}' - {} found!", getThing().getUID(), commandKeyword);
@@ -314,36 +165,11 @@ public class TiVoHandler extends BaseThingHandler {
     }
 
     boolean convertValueToBoolean(Object value) {
-=======
-    public void invalidConfig() {
-        updateStatus(ThingStatus.OFFLINE);
-    }
-
-    int confValueToInt(Object value) {
-        if (value instanceof java.math.BigDecimal) {
-            return ((java.math.BigDecimal) value).intValue();
-        }
-        if (value instanceof String) {
-            return Integer.valueOf((String) value);
-        }
-        if (value instanceof Double) {
-            return ((Double) value).intValue();
-        }
-
-        return Integer.valueOf((Integer) value);
-    }
-
-    boolean confValueToBoolean(Object value) {
->>>>>>> 73f9dc6 Initial Commit
         return value instanceof Boolean ? ((Boolean) value) : Boolean.valueOf((String) value);
     }
 
     @Override
     public void initialize() {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
-=======
-
->>>>>>> 73f9dc6 Initial Commit
         logger.debug("Initializing a TiVo '{}' with config options", getThing().getUID());
         Configuration conf = this.getConfig();
         TivoConfigData tivoConfig = new TivoConfigData();
@@ -356,7 +182,6 @@ public class TiVoHandler extends BaseThingHandler {
 
         value = conf.get(CONFIG_PORT);
         if (value != null) {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
             tivoConfig.setCfgTcpPort(convertValueToInt(value));
         }
 
@@ -398,49 +223,6 @@ public class TiVoHandler extends BaseThingHandler {
         value = conf.get(CONFIG_IGNORE_SCAN);
         if (value != null) {
             tivoConfig.setCfgIgnoreChannelScan(convertValueToBoolean(value));
-=======
-            tivoConfig.setCfgTcpPort(confValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_CONNECTION_RETRY);
-        if (value != null) {
-            tivoConfig.setCfgNumConnRetry(confValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_POLL_INTERVAL);
-        if (value != null) {
-            tivoConfig.setCfgPollInterval(confValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_POLL_FOR_CHANGES);
-        if (value != null) {
-            tivoConfig.setCfgPollChanges(confValueToBoolean(value));
-        }
-
-        value = conf.get(CONFIG_KEEP_CONNECTION_OPEN);
-        if (value != null) {
-            tivoConfig.setCfgKeepConnOpen(confValueToBoolean(value));
-        }
-
-        value = conf.get(CONFIG_CMD_WAIT_INTERVAL);
-        if (value != null) {
-            tivoConfig.setCfgCmdWait(confValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_CH_START);
-        if (value != null) {
-            tivoConfig.setCfgMinChannel(confValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_CH_END);
-        if (value != null) {
-            tivoConfig.setCfgMaxChannel(confValueToInt(value));
-        }
-
-        value = conf.get(CONFIG_IGNORE_SCAN);
-        if (value != null) {
-            tivoConfig.setCfgIgnoreChannelScan(confValueToBoolean(value));
->>>>>>> 73f9dc6 Initial Commit
         }
 
         value = getThing().getUID();
@@ -455,41 +237,19 @@ public class TiVoHandler extends BaseThingHandler {
         }
 
         logger.debug("TivoConfigData Obj: '{}'", tivoConfig.toString());
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         tivoConfigData = tivoConfig;
 
         if (tivoConnection == null) {
             tivoConnection = new TivoStatusProvider(tivoConfigData, this, false);
-=======
-        tivoCfgData = tivoConfig;
-
-        if (myTivoService == null) {
-            myTivoService = new TivoStatusProvider(tivoCfgData, this, false);
->>>>>>> 73f9dc6 Initial Commit
         }
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         if (tivoConfig.doChannelScan()) {
-=======
-
-        if (tivoConfig.getCfgIgnoreChannelScan()) {
->>>>>>> 73f9dc6 Initial Commit
             startChannelScan();
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         } else {
-=======
-
-        } else if (tivoConfig.isCfgPollChanges()) {
->>>>>>> 73f9dc6 Initial Commit
             startPollStatus();
         }
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         updateStatus(ThingStatus.UNKNOWN);
         lastConnectionStatus = ConnectionStatus.UNKNOWN;
-=======
-        updateStatus(ThingStatus.OFFLINE);
-        myTivoService.statusRefresh();
->>>>>>> 73f9dc6 Initial Commit
         logger.debug("Initializing a TiVo handler for thing '{}' - finished!", getThing().getUID());
 
     }
@@ -498,20 +258,10 @@ public class TiVoHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing of a TiVo handler for thing '{}'", getThing().getUID());
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         if (tivoConnection != null) {
             tivoConnection.connTivoDisconnect(true);
-=======
-        if (refreshJob != null) {
-            refreshJob.cancel(false);
-        }
-        if (chScanJob != null) {
-            logger.warn("'{}' - Channel Scan cancelled by dispose()", getThing().getUID());
-            chScanJob.cancel(false);
->>>>>>> 73f9dc6 Initial Commit
         }
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         if (refreshJob != null) {
             logger.warn("'{}' - Polling cancelled by dispose()", getThing().getUID());
             refreshJob.cancel(false);
@@ -521,8 +271,6 @@ public class TiVoHandler extends BaseThingHandler {
             chScanJob.cancel(false);
         }
 
-=======
->>>>>>> 73f9dc6 Initial Commit
         while (chScanJob != null && !chScanJob.isDone()) {
             try {
                 TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCfgCmdWait());
@@ -532,16 +280,7 @@ public class TiVoHandler extends BaseThingHandler {
             }
         }
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         tivoConnection = null;
-=======
-        // Ensure we close any open socket connections
-        if (myTivoService != null) {
-            myTivoService.connTivoConnectRetry(false);
-            myTivoService = null;
-        }
-
->>>>>>> 73f9dc6 Initial Commit
     }
 
     /**
@@ -550,34 +289,15 @@ public class TiVoHandler extends BaseThingHandler {
     private void startPollStatus() {
         int firstStartDelay = tivoConfigData.getCfgPollInterval();
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         Runnable runnable = new Runnable() {
-=======
-        int firstStartDelay = tivoCfgData.getCfgPollInterval();
-
-        refreshJob = scheduler.scheduleAtFixedRate(new Runnable() {
->>>>>>> 73f9dc6 Initial Commit
             @Override
             public void run() {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                 logger.debug("startPollStatus '{}' @ rate of '{}' seconds", getThing().getUID(),
                         tivoConfigData.getCfgPollInterval());
                 tivoConnection.statusRefresh();
-=======
-                try {
-                    logger.debug("refreshJob '{}' @ rate of '{}' seconds", getThing().getUID(),
-                            tivoCfgData.getCfgPollInterval());
-
-                    myTivoService.statusRefresh();
-
-                } catch (Exception e) {
-                    logger.debug("refreshJob '{}' -  exception occurred: {}", getThing().getUID(), e);
-                }
->>>>>>> 73f9dc6 Initial Commit
             }
         };
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         if (tivoConfigData.isCfgKeepConnOpen()) {
             // Run once
             refreshJob = scheduler.schedule(runnable, firstStartDelay, TimeUnit.SECONDS);
@@ -591,10 +311,6 @@ public class TiVoHandler extends BaseThingHandler {
             // Just update the status now
             tivoConnection.statusRefresh();
         }
-=======
-        logger.info("refreshJob '{}' will start in '{}' seconds", getThing().getUID(), firstStartDelay);
-
->>>>>>> 73f9dc6 Initial Commit
     }
 
     /**
@@ -602,12 +318,7 @@ public class TiVoHandler extends BaseThingHandler {
      * {@code cfgIgnoreChannels} list which improves the performance of channel changing operations.
      */
     private void startChannelScan() {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         int firstStartDelay = tivoConfigData.getCfgPollInterval();
-=======
-
-        int firstStartDelay = tivoCfgData.getCfgPollInterval();
->>>>>>> 73f9dc6 Initial Commit
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -615,60 +326,25 @@ public class TiVoHandler extends BaseThingHandler {
                 int maxCh = tivoConfigData.getCfgMaxChannel();
                 TivoStatusData commandResult = tivoConnection.getServiceStatus();
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                 updateState(CHANNEL_TIVO_STATUS, new StringType("CHANNEL SCAN IN PROGRESS"));
                 if (tivoConnection.connTivoConnect()) {
                     tivoConnection.setChScan(true);
-=======
-                    int minCh = tivoCfgData.getCfgMinChannel();
-                    int maxCh = tivoCfgData.getCfgMaxChannel();
-
-                    updateState(CHANNEL_TIVO_STATUS, new StringType("CHANNEL SCAN IN PROGRESS"));
-                    myTivoService.setChScan(true);
-                    TivoStatusData tmpStatus = myTivoService.getServiceStatus();
-
->>>>>>> 73f9dc6 Initial Commit
                     // change to first channel number, this forces the channel scan to run from Min# to Max#
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                     tivoConnection.cmdTivoSend("TELEPORT LIVETV");
                     tivoConnection.cmdTivoSend("SETCH " + minCh);
-=======
-                    myTivoService.cmdTivoSend("TELEPORT LIVETV");
-                    myTivoService.cmdTivoSend("SETCH " + minCh);
->>>>>>> 73f9dc6 Initial Commit
 
                     for (int i = minCh + 1; i <= maxCh;) {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                         if (chScanJob.isCancelled()) {
                             // job has been cancelled, so we need to exit
-=======
-                        // job has been cancelled, so we need to exit
-                        if (chScanJob.isCancelled()) {
->>>>>>> 73f9dc6 Initial Commit
                             logger.warn("Channel Scan for '{}' has been cancelled by configuraition parameter change",
                                     getThing().getUID());
                             updateState(CHANNEL_TIVO_STATUS, new StringType("CHANNEL SCAN CANCELLED"));
                             break;
                         }
                         logger.info("Channel Scan for '{}' testing channel num: '{}'", getThing().getUID(), i);
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                         commandResult = chChannelChange("SETCH", String.valueOf(i));
                         if (commandResult.getChannelNum() != -1) {
                             i = commandResult.getChannelNum() + 1;
-=======
-
-                        if (tmpStatus.getConnOK() >= 2) {
-                            tmpStatus = chChannelChange("SETCH", String.valueOf(i));
-                        } else {
-                            logger.warn("Channel Scan for '{}' has been cancelled as we are offline",
-                                    getThing().getUID());
-                            updateState(CHANNEL_TIVO_STATUS, new StringType("CHANNEL SCAN CANCELLED (OFFLINE)"));
-                            break;
-                        }
-
-                        if (tmpStatus.getChannelNum() != -1) {
-                            i = tmpStatus.getChannelNum() + 1;
->>>>>>> 73f9dc6 Initial Commit
                         } else {
                             i++;
                         }
@@ -682,23 +358,11 @@ public class TiVoHandler extends BaseThingHandler {
 
                     }
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                     tivoConnection.cmdTivoSend("SETCH " + minCh);
 
                 } else {
                     logger.warn("Channel Scan for '{}' failed - unable to connect (offline)", getThing().getUID());
                     updateState(CHANNEL_TIVO_STATUS, new StringType("CHANNEL SCAN CANCELLED (OFFLINE)"));
-=======
-                    myTivoService.cmdTivoSend("SETCH " + minCh);
-                    Configuration conf = editConfiguration();
-                    conf.put(CONFIG_IGNORE_SCAN, false);
-                    updateConfiguration(conf);
-                    myTivoService.setChScan(false);
-                    thingUpdated(getThing());
-
-                } catch (Exception e) {
-                    logger.debug("Exception occurred during Channel Scan: {}", e);
->>>>>>> 73f9dc6 Initial Commit
                 }
                 Configuration conf = editConfiguration();
                 conf.put(CONFIG_IGNORE_SCAN, false);
@@ -717,39 +381,18 @@ public class TiVoHandler extends BaseThingHandler {
      * improve performance, reads the response and adds any new invalid channels {@link chAddIgnored}. Calls
      * {@link chGetNext} to determine the direction of channel change.
      *
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
      * @param commandKeyword the TiVo command object.
-=======
-     * @param tivoCommand the TiVo command object.
->>>>>>> 73f9dc6 Initial Commit
      * @param command the command parameter.
      * @return int channel number.
      */
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     private TivoStatusData chChannelChange(String commandKeyword, String command) {
         int chnl = tivoConfigData.getCfgMinChannel();
         TivoStatusData tmpStatus = tivoConnection.getServiceStatus();
-=======
-    private TivoStatusData chChannelChange(String tivoCommand, String command) {
->>>>>>> 73f9dc6 Initial Commit
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         // compare this to the current channel and determine the "direction" (up or down)
         int numTries = 10;
         chnl = Integer.valueOf(command.toString()).intValue();
-=======
-        int chnl = tivoCfgData.getCfgMinChannel();
-        TivoStatusData tmpStatus = myTivoService.getServiceStatus();
-
->>>>>>> 73f9dc6 Initial Commit
         try {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
-=======
-            // compare this to the current channel and determine the "direction" (up or down)
-            int numTries = 10;
-            chnl = Integer.valueOf(command.toString()).intValue();
-
->>>>>>> 73f9dc6 Initial Commit
             // check for ignored channels execute, check and learn new ignored channels
             while (numTries > 0 && chnl > 0) {
                 numTries--;
@@ -759,25 +402,16 @@ public class TiVoHandler extends BaseThingHandler {
                     chnl = chGetNext(chnl, tmpStatus);
                 }
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                 String tmpCommand = commandKeyword + " " + chnl;
-=======
-                String tmpCommand = tivoCommand + " " + chnl;
-
->>>>>>> 73f9dc6 Initial Commit
                 logger.debug("chChannelChange '{}' sending command to tivo: '{}'", getThing().getUID(), tmpCommand);
 
                 // Attempt to execute the command on the tivo
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                 tivoConnection.cmdTivoSend(tmpCommand);
                 try {
                     TimeUnit.MILLISECONDS.sleep(tivoConfigData.getCfgCmdWait() * 2);
                 } catch (Exception e) {
                 }
                 tmpStatus = tivoConnection.getServiceStatus();
-=======
-                tmpStatus = myTivoService.cmdTivoSend(tmpCommand);
->>>>>>> 73f9dc6 Initial Commit
 
                 // Check to see if the command was successful
                 if (tmpStatus != null && tmpStatus.isCmdOk()) {
@@ -830,10 +464,6 @@ public class TiVoHandler extends BaseThingHandler {
      * @return the sorted set
      */
     private SortedSet<Integer> chParseIgnored(String pChannels, Integer chMin, Integer chMax) {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
-=======
-
->>>>>>> 73f9dc6 Initial Commit
         logger.debug("chParseIgnored '{}' called doCfgParseIgnoreChannel with list: '{}'", getThing().getUID(),
                 pChannels);
 
@@ -981,7 +611,6 @@ public class TiVoHandler extends BaseThingHandler {
      *
      * @param tivoStatusData the {@link TivoStatusData}
      */
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     public void updateTivoStatus(TivoStatusData oldStatusData, TivoStatusData newStatusData) {
         if (newStatusData != null && !tivoConfigData.doChannelScan()) {
             // Update Item Status
@@ -989,15 +618,6 @@ public class TiVoHandler extends BaseThingHandler {
                 if (oldStatusData == null || !(oldStatusData.getMsg().contentEquals(newStatusData.getMsg()))) {
                     updateState(CHANNEL_TIVO_STATUS, new StringType(newStatusData.getMsg()));
                 }
-=======
-    public void updateTivoStatus(TivoStatusData tivoStatusData) {
-
-        // This will update the TiVO status and channel numbers when a channel change command has been issued.
-        if (tivoStatusData != null) {
-            if (tivoStatusData.getPubToUI()) {
-                updateState(CHANNEL_TIVO_STATUS, new StringType(tivoStatusData.getMsg()));
-
->>>>>>> 73f9dc6 Initial Commit
                 // If the cmd was successful, publish the channel channel numbers
                 if (newStatusData.isCmdOk() && newStatusData.getChannelNum() != -1) {
                     if (oldStatusData == null || oldStatusData.getChannelNum() != newStatusData.getChannelNum()) {
@@ -1007,7 +627,6 @@ public class TiVoHandler extends BaseThingHandler {
                 }
 
                 // Now set the pubToUI flag to false, as we have already published this status
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
                 if (isLinked(CHANNEL_TIVO_STATUS) || isLinked(CHANNEL_TIVO_CHANNEL_FORCE)
                         || isLinked(CHANNEL_TIVO_CHANNEL_SET)) {
                     newStatusData.setPubToUI(false);
@@ -1016,15 +635,8 @@ public class TiVoHandler extends BaseThingHandler {
             } else {
                 if (newStatusData.getMsg().contentEquals("COMMAND_TIMEOUT")) {
                     tivoConnection.connTivoDisconnect(false);
-=======
-                if (isLinked(CHANNEL_TIVO_STATUS) | isLinked(CHANNEL_TIVO_CHANNEL_FORCE)
-                        | isLinked(CHANNEL_TIVO_CHANNEL_SET)) {
-                    tivoStatusData.setPubToUI(false);
-                    myTivoService.setServiceStatus(tivoStatusData);
->>>>>>> 73f9dc6 Initial Commit
                 }
             }
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
             // Update Thing status
             if (newStatusData.getConnectionStatus() != lastConnectionStatus) {
                 switch (newStatusData.getConnectionStatus()) {
@@ -1045,8 +657,6 @@ public class TiVoHandler extends BaseThingHandler {
                 }
                 lastConnectionStatus = newStatusData.getConnectionStatus();
             }
-=======
->>>>>>> 73f9dc6 Initial Commit
         }
     }
 
@@ -1066,11 +676,7 @@ public class TiVoHandler extends BaseThingHandler {
         tivoConfigData.addCfgIgnoreChannels(pChannel);
 
         // Re-parse the sorted set and publish to UI
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         SortedSet<Integer> myConfig = tivoConfigData.getCfgIgnoreChannels();
-=======
-        SortedSet<Integer> myConfig = tivoCfgData.getCfgIgnoreChannels();
->>>>>>> 73f9dc6 Initial Commit
         Integer[] uiArr = myConfig.toArray(new Integer[myConfig.size()]);
         String uiResult = chParseRange(uiArr);
 
@@ -1088,10 +694,6 @@ public class TiVoHandler extends BaseThingHandler {
      * @return the next channel number.
      */
     private int chGetNext(int pChannel, TivoStatusData tivoStatusData) {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
-=======
-
->>>>>>> 73f9dc6 Initial Commit
         if (chCheckIgnored(pChannel)) {
             if (tivoStatusData != null && tivoStatusData.isCmdOk()) {
                 // retry logic is allowed otherwise we only do the logic below once.
@@ -1133,32 +735,10 @@ public class TiVoHandler extends BaseThingHandler {
      * @return true= channel is contained within the list, false= channel number is not contained within the list.
      */
     private boolean chCheckIgnored(int pChannel) {
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
         if (tivoConfigData.getCfgIgnoreChannels() != null && tivoConfigData.getCfgIgnoreChannels().contains(pChannel)) {
-=======
-
-        if (tivoCfgData.getCfgIgnoreChannels() != null && tivoCfgData.getCfgIgnoreChannels().contains(pChannel)) {
->>>>>>> 73f9dc6 Initial Commit
             return true;
         } else {
             return false;
         }
     }
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
-=======
-
-    /**
-     * {@link setTivoStatus} changed the thing status to online. Typically called from the child status polling job when
-     * connections can be made to the TiVo and status codes are returned.
-     *
-     * @param thingStatusDetail the thingStatusDetail
-     * @param strMsg the error message / reason why the device is offline (displayed in the GUI)
-     */
-    public void setTivoStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail, String strMsg) {
-
-        updateStatus(thingStatus, thingStatusDetail, strMsg);
-
-    }
-
->>>>>>> 73f9dc6 Initial Commit
 }
