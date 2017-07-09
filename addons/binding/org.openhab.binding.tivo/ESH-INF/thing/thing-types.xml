@@ -33,19 +33,12 @@ control of channel changes, user interface navigation and allow the client to se
             	<required>true</required>
             	<label>Address</label>
             	<description>The IP address or host name of your TiVo box</description>
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
             	<context>network-address</context>
-=======
->>>>>>> 73f9dc6 Initial Commit
         	</parameter>
         	<parameter name="tcpPort" type="integer" max="65535" min="1">
 				<default>31339</default>
 				<required>true</required>
 				<label>TCP Port</label>
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
-=======
-				<context>network-address</context>
->>>>>>> 73f9dc6 Initial Commit
 				<description>The TCP port number used to connect to the TiVo.<![CDATA[ <b> ]]>Default: 31339<![CDATA[ </b> ]]></description>
 			</parameter>
 			<parameter name="numRetry" type="integer" max="20" min="0">
@@ -105,11 +98,7 @@ control of channel changes, user interface navigation and allow the client to se
         </config-description>
     </thing-type>
 
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     <channel-type id="channelForce">
-=======
-    <channel-type id="tivoChannelForce">
->>>>>>> 73f9dc6 Initial Commit
         <item-type>Number</item-type>
         <label>Current Channel - Forced (FORCECH)</label>
         <description>Displays the current channel number.  When changed, tunes the DVR to the specified channel, cancelling any recordings in progress if necessary i.e. all tuners are already in use / recording. The TiVo must be in Live TV mode for this command to work.  Type: Number (1-9999), DisplayFormat: %n</description>
