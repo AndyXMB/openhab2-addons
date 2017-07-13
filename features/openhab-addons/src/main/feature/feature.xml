@@ -325,24 +325,17 @@
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tellstick/${project.version}</bundle>
     </feature>
-<<<<<<< HEAD
-    
-=======
->>>>>>> branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
+
     <feature name="openhab-binding-tesla" description="Tesla Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tesla/${project.version}</bundle>
     </feature>
-<<<<<<< HEAD
-<<<<<<< Upstream, based on branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
 
     <feature name="openhab-binding-tivo" description="TiVo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-mdns</feature>
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tivo/${project.version}</bundle>
     </feature>
-
-=======
     
     <feature name="openhab-binding-tivo" description="TiVo Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
@@ -350,10 +343,6 @@
         <bundle start-level="80">mvn:org.openhab.binding/org.openhab.binding.tivo/${project.version}</bundle>
     </feature>
     
->>>>>>> 73f9dc6 Initial Commit
-=======
-
->>>>>>> branch 'master' of https://github.com/AndyXMB/openhab2-addons.git
     <feature name="openhab-binding-urtsi" description="Somfy URTSI II Binding" version="${project.version}">
         <feature>openhab-runtime-base</feature>
         <feature>openhab-transport-serial</feature>
