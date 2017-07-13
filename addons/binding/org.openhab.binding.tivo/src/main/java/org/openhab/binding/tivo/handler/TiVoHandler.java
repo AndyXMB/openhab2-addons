@@ -171,6 +171,10 @@ public class TiVoHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing a TiVo '{}' with config options", getThing().getUID());
+
+        // tivoConfigData = getConfigAs(TivoConfigData.class);
+        // logger.info("Using configuration: {}", tivoConfigData);
+
         Configuration conf = this.getConfig();
         TivoConfigData tivoConfig = new TivoConfigData();
 
@@ -236,16 +240,25 @@ public class TiVoHandler extends BaseThingHandler {
                     tivoConfig.getCfgMinChannel(), tivoConfig.getCfgMaxChannel()));
         }
 
-        logger.debug("TivoConfigData Obj: '{}'", tivoConfig.toString());
         tivoConfigData = tivoConfig;
+        logger.debug("TivoConfigData Obj: '{}'", tivoConfigData);
 
         if (tivoConnection == null) {
-            tivoConnection = new TivoStatusProvider(tivoConfigData, this, false);
+            tivoConnection = new TivoStatusProvider(tivoConfigData, this);
         }
+
+        // scheduler.execute(new Runnable() {
+        //
+        // @Override
+        // public void run() {
+        // logger.debug("Open connection to Onkyo Receiver @{}", getThing().getUID());
+
         if (tivoConfig.doChannelScan()) {
             startChannelScan();
         } else {
             startPollStatus();
+            // }
+            // };
         }
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -666,13 +679,13 @@ public class TiVoHandler extends BaseThingHandler {
      * @param pChannel the channel number.
      */
     private void chAddIgnored(Integer pChannel) {
-        logger.info("chAddIgnored '{}' Adding new ignored channel '{}'", getThing().getUID(), pChannel);
 
         // if we already see this channel as being ignored there is no reason to ignore it again.
         if (chCheckIgnored(pChannel)) {
             return;
         }
 
+        logger.info("chAddIgnored '{}' Adding new ignored channel '{}'", getThing().getUID(), pChannel);
         tivoConfigData.addCfgIgnoreChannels(pChannel);
 
         // Re-parse the sorted set and publish to UI

@@ -57,7 +57,7 @@ public class TivoStatusProvider {
      *
      */
 
-    public TivoStatusProvider(TivoConfigData tivoConfigData, TiVoHandler tivoHandler, Boolean pausePolling) {
+    public TivoStatusProvider(TivoConfigData tivoConfigData, TiVoHandler tivoHandler) {
         this.tivoStatusData = new TivoStatusData(false, -1, "INITIALISING", false, ConnectionStatus.UNKNOWN);
         this.tivoConfigData = tivoConfigData;
         this.tivoHandler = tivoHandler;
@@ -305,7 +305,7 @@ public class TivoStatusProvider {
      * @param pConnect true = make a new connection , false = close existing connection
      * @return boolean true = connection succeeded, false = connection failed
      */
-    private boolean connSocketConnect() {
+    private synchronized boolean connSocketConnect() {
         logger.debug(" connSocketConnect '{}' - attempting connection to host '{}', port '{}'",
                 tivoConfigData.getCfgIdentifier(), tivoConfigData.getCfgHost(), tivoConfigData.getCfgTcpPort());
 
